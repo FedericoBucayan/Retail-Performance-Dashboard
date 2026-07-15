@@ -64,13 +64,7 @@ If you prefer running it manually from your terminal:
 * **`RET_KPI_Sales_Database.xlsx`**: Store-level KPI spreadsheet database.
 * **`RET_Product_Sales_Database.xlsx`**: Product transaction-level spreadsheet database.
 * **`README.md`**: Project documentation (this file).
-* **`Reference_Material/`**: Subfolder housing the local build scripts and dashboard assets:
-  * **`prepare_data.py`**: Python script to reload raw spreadsheets and update aggregated data.
-  * **`compile.py`**: Python script to merge template and data into the final dashboard report.
-  * **`validate.py`**: Python script to run integrity checks on the compiled file.
-  * **`template.html`**: The clean HTML/JS dashboard layout template.
-  * **`avatar.png`**: Headshot avatar image used inside the "About this Dashboard" overlay.
-  * **`scratch/data_vars.js`**: Compiled database variables in JavaScript array format.
+* **`Reference_Material/`**: Subfolder housing the local data prep scripts, layout templates, and dashboard assets.
 
 ---
 *Designed and Developed by Federico Bucayan | © 2026*
