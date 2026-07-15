@@ -24,7 +24,7 @@ This repository demonstrates the power of AI-assisted engineering and showcases 
 1. **Spreadsheet Inputs**: The database consists of two core Excel files: `RET_KPI_Sales_Database.xlsx` (store metrics) and `RET_Product_Sales_Database.xlsx` (product-level transactions).
 2. **Database Aggregator**: Python loads the Excel records, aggregates the product-level database by Product Group, and outputs compact data arrays to `Reference_Material/scratch/data_vars.js`.
 3. **HTML Compiler**: A compiler script merges the aggregated data variables directly with `Reference_Material/template.html` to generate a single compiled file.
-4. **Interactive Dashboard**: Launches a fully self-contained visual report (`Retail_Visual_Report.html`) that runs offline in any browser.
+4. **Interactive Dashboard**: Launches a fully self-contained visual report (`index.html`) that runs offline in any browser.
 
 ## How to Update the Dashboard with New Data
 
@@ -35,7 +35,7 @@ Simply double-click the **`Refresh_Retail_Visual_Report.bat`** file in the root 
 1. Aggregate the raw database spreadsheets.
 2. Recompile the dashboard template.
 3. Verify file integrity using the validation checks.
-4. Open the updated **`Retail_Visual_Report.html`** in your default web browser.
+4. Open the updated **`index.html`** in your default web browser.
 
 ### Method B: Manual Command Line Update
 If you prefer running it manually from your terminal:
@@ -59,7 +59,7 @@ If you prefer running it manually from your terminal:
 
 ## 📂 Repository File Guide
 
-* **`Retail_Visual_Report.html`**: The main compiled interactive visual dashboard. Open this to view the report.
+* **`index.html`**: The main compiled interactive visual dashboard. Open this to view the report.
 * **`Refresh_Retail_Visual_Report.bat`**: One-click batch script to aggregate spreadsheet data, compile the dashboard layout, run validation, and launch the report.
 * **`RET_KPI_Sales_Database.xlsx`**: Store-level KPI spreadsheet database.
 * **`RET_Product_Sales_Database.xlsx`**: Product transaction-level spreadsheet database.

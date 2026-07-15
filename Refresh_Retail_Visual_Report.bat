@@ -63,9 +63,9 @@ echo.
 
 echo ============================================================
 echo   COMPILATION COMPLETED SUCCESSFULLY!
-echo   Opening Retail_Visual_Report.html in your default browser...
+echo   Opening index.html in your default browser...
 echo ============================================================
 echo.
 
-start "" "Retail_Visual_Report.html"
+start "" "index.html"
 exit
