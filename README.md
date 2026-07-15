@@ -64,7 +64,6 @@ If you prefer running it manually from your terminal:
 * **`RET_KPI_Sales_Database.xlsx`**: Store-level KPI spreadsheet database.
 * **`RET_Product_Sales_Database.xlsx`**: Product transaction-level spreadsheet database.
 * **`README.md`**: Project documentation (this file).
-* **`Reference_Material/`**: Subfolder housing the local data prep scripts, layout templates, and dashboard assets.
 
 ---
 *Designed and Developed by Federico Bucayan | © 2026*
