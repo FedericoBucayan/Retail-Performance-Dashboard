@@ -1,4 +1,4 @@
-# Retail Performance Scorecard & Visual Report
+# Retail Performance Dashboard
 
 🔗 [Live Interactive Dashboard Demo](https://federicobucayan.github.io/Retail-Performance-Dashboard/)
 
