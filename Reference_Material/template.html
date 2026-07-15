@@ -1,0 +1,1944 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Retail Performance Dashboard</title>
+  
+  <!-- Tailwind CSS v4 -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Chart.js Datalabels Plugin -->
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+  
+  <style type="text/tailwindcss">
+    @theme {
+      --font-sans: 'Inter', sans-serif;
+      --color-brand-navy: #0f172a;
+      --color-brand-accent: #0284c7;
+      --color-brand-emerald: #10b981;
+    }
+    
+    body {
+      background-color: #f8fafc;
+      font-family: var(--font-sans);
+    }
+  </style>
+</head>
+<body class="text-slate-900 min-h-screen flex flex-col">
+
+  <!-- Header -->
+  <header class="bg-slate-900 text-white shadow-md">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+          <div class="flex items-center space-x-3">
+            <span class="bg-emerald-500 p-2 rounded-lg text-slate-900">
+              <!-- Briefcase/Chart Icon -->
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 002 2h2a2 2 0 002-2" />
+              </svg>
+            </span>
+            <h1 class="text-2xl font-extrabold tracking-tight">RETAIL PERFORMANCE DASHBOARD</h1>
+          </div>
+        </div>
+        <div class="flex items-center space-x-6 text-sm">
+          <div class="text-right hidden sm:block">
+            <p class="text-slate-400 text-xs font-semibold uppercase tracking-wider">Last Updates</p>
+            <p class="font-bold text-white mt-0.5">Sales &amp; Stock: <span class="text-emerald-400">/* LAST_UPDATE_PLACEHOLDER */</span></p>
+          </div>
+          <div class="border-l border-slate-800 pl-6 flex items-center space-x-3">
+            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-slate-800 text-slate-300 border border-slate-700 select-none">
+              <span class="w-2 h-2 mr-2 bg-emerald-500 rounded-full animate-pulse"></span>
+              Live Database
+            </span>
+            <button onclick="openCreditsModal()" class="flex items-center space-x-1.5 px-3 py-1 rounded-full border border-slate-700 hover:border-slate-500 bg-slate-800/50 hover:bg-slate-800 transition-colors text-slate-300 hover:text-white cursor-pointer select-none text-xs font-semibold">
+              <span>ℹ️</span>
+              <span>About the Creator</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Container -->
+  <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+
+    <!-- Filters Section -->
+    <div class="bg-white rounded-xl shadow-xs border border-slate-200 p-4">
+      <div class="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
+        <div class="flex items-center space-x-2">
+          <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+          </svg>
+          <span class="font-bold text-sm text-slate-700 uppercase tracking-wider">Filters</span>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 flex-grow md:max-w-4xl">
+          <!-- Target Year Filter -->
+          <div>
+            <label for="yearFilter" class="block text-xs font-semibold text-slate-500 mb-1 uppercase tracking-wider">Target Year</label>
+            <select id="yearFilter" class="w-full bg-slate-50 border border-slate-300 text-slate-700 text-sm rounded-lg focus:ring-sky-500 focus:border-sky-500 p-2 font-medium cursor-pointer">
+              <!-- Dynamically populated -->
+            </select>
+          </div>
+
+          <!-- Month/Season Multi-Select Filter -->
+          <div class="relative">
+            <label class="block text-xs font-semibold text-slate-500 mb-1 uppercase tracking-wider">Month / Season</label>
+            <button id="monthDropdownBtn" type="button" class="w-full bg-slate-50 border border-slate-300 text-slate-700 text-sm rounded-lg focus:ring-sky-500 focus:border-sky-500 p-2 font-medium cursor-pointer flex justify-between items-center">
+              <span id="monthDropdownLabel" class="truncate">All Months</span>
+              <svg class="w-4 h-4 ml-2 text-slate-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+            
+            <!-- Custom Multi-Select Dropdown Menu -->
+            <div id="monthDropdownMenu" class="hidden absolute left-0 right-0 mt-1 bg-white border border-slate-200 rounded-lg shadow-lg z-50 p-3 max-h-80 overflow-y-auto space-y-3">
+              <!-- Quick Select Buttons -->
+              <div class="grid grid-cols-2 gap-1.5 text-[9px] font-bold text-slate-500 uppercase tracking-wide">
+                <button type="button" onclick="selectMonthsShortcut('All')" class="bg-slate-100 hover:bg-slate-200 py-1.5 rounded cursor-pointer text-center select-none">All Months</button>
+                <button type="button" onclick="selectMonthsShortcut('Clear')" class="bg-slate-100 hover:bg-slate-200 py-1.5 rounded cursor-pointer text-center select-none">Clear All</button>
+                <button type="button" onclick="selectMonthsShortcut('SS')" class="bg-slate-100 hover:bg-slate-200 py-1.5 rounded cursor-pointer text-center select-none">SS (JAN-JUN)</button>
+                <button type="button" onclick="selectMonthsShortcut('AW')" class="bg-slate-100 hover:bg-slate-200 py-1.5 rounded cursor-pointer text-center select-none">AW (JUL-DEC)</button>
+                <button type="button" onclick="selectMonthsShortcut('Q1')" class="bg-slate-100 hover:bg-slate-200 py-1.5 rounded cursor-pointer text-center select-none">Q1 (JAN-MAR)</button>
+                <button type="button" onclick="selectMonthsShortcut('Q2')" class="bg-slate-100 hover:bg-slate-200 py-1.5 rounded cursor-pointer text-center select-none">Q2 (APR-JUN)</button>
+                <button type="button" onclick="selectMonthsShortcut('Q3')" class="bg-slate-100 hover:bg-slate-200 py-1.5 rounded cursor-pointer text-center select-none">Q3 (JUL-SEP)</button>
+                <button type="button" onclick="selectMonthsShortcut('Q4')" class="bg-slate-100 hover:bg-slate-200 py-1.5 rounded cursor-pointer text-center select-none">Q4 (OCT-DEC)</button>
+              </div>
+              
+              <!-- Checkboxes List -->
+              <div class="border-t border-slate-100 pt-2 grid grid-cols-2 gap-2 text-xs font-semibold text-slate-700">
+                <label class="flex items-center space-x-2 cursor-pointer py-0.5"><input type="checkbox" value="JAN" class="month-checkbox rounded border-slate-300 text-sky-600 focus:ring-sky-500 cursor-pointer"><span>January</span></label>
+                <label class="flex items-center space-x-2 cursor-pointer py-0.5"><input type="checkbox" value="FEB" class="month-checkbox rounded border-slate-300 text-sky-600 focus:ring-sky-500 cursor-pointer"><span>February</span></label>
+                <label class="flex items-center space-x-2 cursor-pointer py-0.5"><input type="checkbox" value="MAR" class="month-checkbox rounded border-slate-300 text-sky-600 focus:ring-sky-500 cursor-pointer"><span>March</span></label>
+                <label class="flex items-center space-x-2 cursor-pointer py-0.5"><input type="checkbox" value="APR" class="month-checkbox rounded border-slate-300 text-sky-600 focus:ring-sky-500 cursor-pointer"><span>April</span></label>
+                <label class="flex items-center space-x-2 cursor-pointer py-0.5"><input type="checkbox" value="MAY" class="month-checkbox rounded border-slate-300 text-sky-600 focus:ring-sky-500 cursor-pointer"><span>May</span></label>
+                <label class="flex items-center space-x-2 cursor-pointer py-0.5"><input type="checkbox" value="JUN" class="month-checkbox rounded border-slate-300 text-sky-600 focus:ring-sky-500 cursor-pointer"><span>June</span></label>
+                <label class="flex items-center space-x-2 cursor-pointer py-0.5"><input type="checkbox" value="JUL" class="month-checkbox rounded border-slate-300 text-sky-600 focus:ring-sky-500 cursor-pointer"><span>July</span></label>
+                <label class="flex items-center space-x-2 cursor-pointer py-0.5"><input type="checkbox" value="AUG" class="month-checkbox rounded border-slate-300 text-sky-600 focus:ring-sky-500 cursor-pointer"><span>August</span></label>
+                <label class="flex items-center space-x-2 cursor-pointer py-0.5"><input type="checkbox" value="SEP" class="month-checkbox rounded border-slate-300 text-sky-600 focus:ring-sky-500 cursor-pointer"><span>September</span></label>
+                <label class="flex items-center space-x-2 cursor-pointer py-0.5"><input type="checkbox" value="OCT" class="month-checkbox rounded border-slate-300 text-sky-600 focus:ring-sky-500 cursor-pointer"><span>October</span></label>
+                <label class="flex items-center space-x-2 cursor-pointer py-0.5"><input type="checkbox" value="NOV" class="month-checkbox rounded border-slate-300 text-sky-600 focus:ring-sky-500 cursor-pointer"><span>November</span></label>
+                <label class="flex items-center space-x-2 cursor-pointer py-0.5"><input type="checkbox" value="DEC" class="month-checkbox rounded border-slate-300 text-sky-600 focus:ring-sky-500 cursor-pointer"><span>December</span></label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Store Filter -->
+          <div>
+            <label for="storeFilter" class="block text-xs font-semibold text-slate-500 mb-1 uppercase tracking-wider">Store Name</label>
+            <select id="storeFilter" class="w-full bg-slate-50 border border-slate-300 text-slate-700 text-sm rounded-lg focus:ring-sky-500 focus:border-sky-500 p-2 font-medium cursor-pointer">
+              <option value="All">All Stores (Total RET)</option>
+              <option value="Performance Store">Performance Store</option>
+              <option value="Fashion Store">Fashion Store</option>
+              <option value="Outlet Store">Outlet Store</option>
+            </select>
+          </div>
+
+          <!-- Category Filter -->
+          <div>
+            <label for="categoryFilter" class="block text-xs font-semibold text-slate-500 mb-1 uppercase tracking-wider">Product Category</label>
+            <select id="categoryFilter" class="w-full bg-slate-50 border border-slate-300 text-slate-700 text-sm rounded-lg focus:ring-sky-500 focus:border-sky-500 p-2 font-medium cursor-pointer">
+              <option value="All">All Categories</option>
+              <option value="CASUAL">CASUAL</option>
+              <option value="FASHION">FASHION</option>
+              <option value="FOOTBALL">FOOTBALL</option>
+              <option value="RUNNING">RUNNING</option>
+              <option value="TRAINING">TRAINING</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- YoY Matrix Table - The Primary Card (Template Requirement) -->
+    <div class="bg-white rounded-xl shadow-xs border border-slate-200 overflow-hidden">
+      <div class="border-b border-slate-200 bg-slate-50 px-6 py-4 flex items-center justify-between">
+        <div class="flex items-center space-x-2">
+          <span class="w-2.5 h-2.5 bg-sky-600 rounded-full"></span>
+          <h2 class="text-sm font-bold text-slate-800 uppercase tracking-wider">YoY Performance Comparison Matrix</h2>
+        </div>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="bg-slate-100 border-b border-slate-200 text-xs font-bold text-slate-600 uppercase tracking-wider">
+              <th rowspan="2" class="p-2 border-r border-slate-200 min-w-[150px] align-middle"></th>
+              <th colspan="3" class="px-1 py-1.5 text-center border-r border-slate-200 bg-slate-50">Performance Store</th>
+              <th colspan="3" class="px-1 py-1.5 text-center border-r border-slate-200 bg-white">Fashion Store</th>
+              <th colspan="3" class="px-1 py-1.5 text-center border-r border-slate-200 bg-slate-50">Outlet Store</th>
+              <th colspan="3" class="px-1 py-1.5 text-center bg-sky-50 text-sky-900">Total RET</th>
+            </tr>
+            <tr class="bg-slate-50 border-b border-slate-200 text-[10px] font-bold text-slate-500 uppercase tracking-wider text-center">
+              <!-- Performance Store -->
+              <th class="px-1 py-1 border-r border-slate-100 bg-slate-50/50 text-[9px] hdr-target">--</th>
+              <th class="px-1 py-1 border-r border-slate-100 bg-slate-50/50 text-[9px] hdr-comp">--</th>
+              <th class="px-1 py-1 border-r border-slate-200 bg-slate-50 text-[9px]">YoY</th>
+              <!-- Fashion Store -->
+              <th class="px-1 py-1 border-r border-slate-100 bg-white text-[9px] hdr-target">--</th>
+              <th class="px-1 py-1 border-r border-slate-100 bg-white text-[9px] hdr-comp">--</th>
+              <th class="px-1 py-1 border-r border-slate-200 bg-white text-[9px]">YoY</th>
+              <!-- Outlet Store -->
+              <th class="px-1 py-1 border-r border-slate-100 bg-slate-50/50 text-[9px] hdr-target">--</th>
+              <th class="px-1 py-1 border-r border-slate-100 bg-slate-50/50 text-[9px] hdr-comp">--</th>
+              <th class="px-1 py-1 border-r border-slate-200 bg-slate-50 text-[9px]">YoY</th>
+              <!-- Total RET -->
+              <th class="px-1 py-1 border-r border-sky-100 bg-sky-50/50 text-[9px] hdr-target">--</th>
+              <th class="px-1 py-1 border-r border-sky-100 bg-sky-50/50 text-[9px] hdr-comp">--</th>
+              <th class="px-1 py-1 bg-sky-50 text-[9px]">YoY</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100 text-xs font-medium">
+            
+            <!-- SECTION 1: SALES & MARGIN -->
+            <tr class="bg-slate-50/50 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+              <td colspan="13" class="p-2 pl-4 border-r border-slate-200">Sales &amp; Margin Performance</td>
+            </tr>
+            <!-- Net Sales (NS) -->
+            <tr class="hover:bg-slate-50/50 transition-colors">
+              <td class="p-1.5 pl-3 border-r border-slate-200 font-bold text-slate-800 flex items-center space-x-1.5">
+                <span class="w-1.5 h-6 bg-sky-500 rounded-xs"></span>
+                <span>Net Sales (NS)</span>
+              </td>
+              <td id="perf_ns_2025" class="px-1 py-2 text-right border-r border-slate-100 text-slate-800">--</td>
+              <td id="perf_ns_2024" class="px-1 py-2 text-right border-r border-slate-100 text-slate-500">--</td>
+              <td id="perf_ns_yoy" class="px-1.5 py-2 text-center border-r border-slate-200 font-bold">--</td>
+              <td id="fash_ns_2025" class="px-1 py-2 text-right border-r border-slate-100 text-slate-800">--</td>
+              <td id="fash_ns_2024" class="px-1 py-2 text-right border-r border-slate-100 text-slate-500">--</td>
+              <td id="fash_ns_yoy" class="px-1.5 py-2 text-center border-r border-slate-200 font-bold">--</td>
+              <td id="out_ns_2025" class="px-1 py-2 text-right border-r border-slate-100 text-slate-800">--</td>
+              <td id="out_ns_2024" class="px-1 py-2 text-right border-r border-slate-100 text-slate-500">--</td>
+              <td id="out_ns_yoy" class="px-1.5 py-2 text-center border-r border-slate-200 font-bold">--</td>
+              <td id="tot_ns_2025" class="px-1 py-2 text-right border-r border-sky-100 text-sky-955 font-bold bg-sky-50/10">--</td>
+              <td id="tot_ns_2024" class="px-1 py-2 text-right border-r border-sky-100 text-slate-500 bg-sky-50/10">--</td>
+              <td id="tot_ns_yoy" class="px-1.5 py-2 text-center font-extrabold bg-sky-50/30">--</td>
+            </tr>
+            <!-- Net Quantity (NQ) -->
+            <tr class="hover:bg-slate-50/50 transition-colors">
+              <td class="p-1.5 pl-3 border-r border-slate-200 font-bold text-slate-800 flex items-center space-x-1.5">
+                <span class="w-1.5 h-6 bg-slate-400 rounded-xs"></span>
+                <span>Net Quantity (NQ)</span>
+              </td>
+              <td id="perf_nq_2025" class="px-1 py-2 text-right border-r border-slate-100 text-slate-800">--</td>
+              <td id="perf_nq_2024" class="px-1 py-2 text-right border-r border-slate-100 text-slate-500">--</td>
+              <td id="perf_nq_yoy" class="px-1.5 py-2 text-center border-r border-slate-200 font-bold">--</td>
+              <td id="fash_nq_2025" class="px-1 py-2 text-right border-r border-slate-100 text-slate-800">--</td>
+              <td id="fash_nq_2024" class="px-1 py-2 text-right border-r border-slate-100 text-slate-500">--</td>
+              <td id="fash_nq_yoy" class="px-1.5 py-2 text-center border-r border-slate-200 font-bold">--</td>
+              <td id="out_nq_2025" class="px-1 py-2 text-right border-r border-slate-100 text-slate-800">--</td>
+              <td id="out_nq_2024" class="px-1 py-2 text-right border-r border-slate-100 text-slate-500">--</td>
+              <td id="out_nq_yoy" class="px-1.5 py-2 text-center border-r border-slate-200 font-bold">--</td>
+              <td id="tot_nq_2025" class="px-1 py-2 text-right border-r border-sky-100 text-sky-955 font-bold bg-sky-50/10">--</td>
+              <td id="tot_nq_2024" class="px-1 py-2 text-right border-r border-sky-100 text-slate-500 bg-sky-50/10">--</td>
+              <td id="tot_nq_yoy" class="px-1.5 py-2 text-center font-extrabold bg-sky-50/30">--</td>
+            </tr>
+            <!-- ASP (AUR) -->
+            <tr class="hover:bg-slate-50/50 transition-colors">
+              <td class="p-1.5 pl-3 border-r border-slate-200 font-bold text-slate-800 flex items-center space-x-1.5">
+                <span class="w-1.5 h-6 bg-slate-400 rounded-xs"></span>
+                <span>ASP (AUR)</span>
+              </td>
+              <td id="perf_asp_2025" class="px-1 py-2 text-right border-r border-slate-100 text-slate-800">--</td>
+              <td id="perf_asp_2024" class="px-1 py-2 text-right border-r border-slate-100 text-slate-500">--</td>
+              <td id="perf_asp_yoy" class="px-1.5 py-2 text-center border-r border-slate-200 font-bold">--</td>
+              <td id="fash_asp_2025" class="px-1 py-2 text-right border-r border-slate-100 text-slate-800">--</td>
+              <td id="fash_asp_2024" class="px-1 py-2 text-right border-r border-slate-100 text-slate-500">--</td>
+              <td id="fash_asp_yoy" class="px-1.5 py-2 text-center border-r border-slate-200 font-bold">--</td>
+              <td id="out_asp_2025" class="px-1 py-2 text-right border-r border-slate-100 text-slate-800">--</td>
+              <td id="out_asp_2024" class="px-1 py-2 text-right border-r border-slate-100 text-slate-500">--</td>
+              <td id="out_asp_yoy" class="px-1.5 py-2 text-center border-r border-slate-200 font-bold">--</td>
+              <td id="tot_asp_2025" class="px-1 py-2 text-right border-r border-sky-100 text-sky-955 font-bold bg-sky-50/10">--</td>
+              <td id="tot_asp_2024" class="px-1 py-2 text-right border-r border-sky-100 text-slate-500 bg-sky-50/10">--</td>
+              <td id="tot_asp_yoy" class="px-1.5 py-2 text-center font-extrabold bg-sky-50/30">--</td>
+            </tr>
+            <!-- Standard Margin % (SM%) -->
+            <tr class="hover:bg-slate-50/50 transition-colors">
+              <td class="p-1.5 pl-3 border-r border-slate-200 font-bold text-slate-800 flex items-center space-x-1.5">
+                <span class="w-1.5 h-6 bg-emerald-500 rounded-xs"></span>
+                <span>Standard Margin % (SM%)</span>
+              </td>
+              <td id="perf_sm_2025" class="px-1 py-2 text-right border-r border-slate-100 text-slate-800">--</td>
+              <td id="perf_sm_2024" class="px-1 py-2 text-right border-r border-slate-100 text-slate-500">--</td>
+              <td id="perf_sm_yoy" class="px-1.5 py-2 text-center border-r border-slate-200 font-bold">--</td>
+              <td id="fash_sm_2025" class="px-1 py-2 text-right border-r border-slate-100 text-slate-800">--</td>
+              <td id="fash_sm_2024" class="px-1 py-2 text-right border-r border-slate-100 text-slate-500">--</td>
+              <td id="fash_sm_yoy" class="px-1.5 py-2 text-center border-r border-slate-200 font-bold">--</td>
+              <td id="out_sm_2025" class="px-1 py-2 text-right border-r border-slate-100 text-slate-800">--</td>
+              <td id="out_sm_2024" class="px-1 py-2 text-right border-r border-slate-100 text-slate-500">--</td>
+              <td id="out_sm_yoy" class="px-1.5 py-2 text-center border-r border-slate-200 font-bold">--</td>
+              <td id="tot_sm_2025" class="px-1 py-2 text-right border-r border-sky-100 text-sky-955 font-bold bg-sky-50/10">--</td>
+              <td id="tot_sm_2024" class="px-1 py-2 text-right border-r border-sky-100 text-slate-500 bg-sky-50/10">--</td>
+              <td id="tot_sm_yoy" class="px-1.5 py-2 text-center font-extrabold bg-sky-50/30">--</td>
+            </tr>
+
+            <!-- SECTION 2: TRAFFIC & TRANSACTIONS -->
+            <tr class="bg-slate-50/50 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+              <td colspan="13" class="p-2 pl-4 border-r border-slate-200">Traffic &amp; Transaction Efficiency</td>
+            </tr>
+            <!-- Traffic -->
+            <tr class="hover:bg-slate-50/50 transition-colors">
+              <td class="p-1.5 pl-3 border-r border-slate-200 font-bold text-slate-800 flex items-center justify-between pr-1.5">
+                <span class="flex items-center space-x-1.5">
+                  <span class="w-1.5 h-6 bg-slate-300 rounded-xs"></span>
+                  <span>Traffic</span>
+                </span>
+                <span id="trafficBadge" class="hidden text-[9px] font-bold text-slate-400 border border-slate-200 bg-slate-100 px-1.5 py-0.5 rounded uppercase tracking-wider">Store Total</span>
+              </td>
+              <td id="perf_tf_2025" class="px-1 py-2 text-right border-r border-slate-100 text-slate-800">--</td>
+              <td id="perf_tf_2024" class="px-1 py-2 text-right border-r border-slate-100 text-slate-500">--</td>
+              <td id="perf_tf_yoy" class="px-1.5 py-2 text-center border-r border-slate-200 font-bold">--</td>
+              <td id="fash_tf_2025" class="px-1 py-2 text-right border-r border-slate-100 text-slate-800">--</td>
+              <td id="fash_tf_2024" class="px-1 py-2 text-right border-r border-slate-100 text-slate-500">--</td>
+              <td id="fash_tf_yoy" class="px-1.5 py-2 text-center border-r border-slate-200 font-bold">--</td>
+              <td id="out_tf_2025" class="px-1 py-2 text-right border-r border-slate-100 text-slate-800">--</td>
+              <td id="out_tf_2024" class="px-1 py-2 text-right border-r border-slate-100 text-slate-500">--</td>
+              <td id="out_tf_yoy" class="px-1.5 py-2 text-center border-r border-slate-200 font-bold">--</td>
+              <td id="tot_tf_2025" class="px-1 py-2 text-right border-r border-sky-100 text-sky-955 font-bold bg-sky-50/10">--</td>
+              <td id="tot_tf_2024" class="px-1 py-2 text-right border-r border-sky-100 text-slate-500 bg-sky-50/10">--</td>
+              <td id="tot_tf_yoy" class="px-1.5 py-2 text-center font-extrabold bg-sky-50/30">--</td>
+            </tr>
+            <!-- Transactions -->
+            <tr class="hover:bg-slate-50/50 transition-colors">
+              <td class="p-1.5 pl-3 border-r border-slate-200 font-bold text-slate-800 flex items-center justify-between pr-1.5">
+                <span class="flex items-center space-x-1.5">
+                  <span class="w-1.5 h-6 bg-slate-300 rounded-xs"></span>
+                  <span>Transactions</span>
+                </span>
+                <span id="transBadge" class="hidden text-[9px] font-bold text-slate-400 border border-slate-200 bg-slate-100 px-1.5 py-0.5 rounded uppercase tracking-wider">Store Total</span>
+              </td>
+              <td id="perf_tx_2025" class="px-1 py-2 text-right border-r border-slate-100 text-slate-800">--</td>
+              <td id="perf_tx_2024" class="px-1 py-2 text-right border-r border-slate-100 text-slate-500">--</td>
+              <td id="perf_tx_yoy" class="px-1.5 py-2 text-center border-r border-slate-200 font-bold">--</td>
+              <td id="fash_tx_2025" class="px-1 py-2 text-right border-r border-slate-100 text-slate-800">--</td>
+              <td id="fash_tx_2024" class="px-1 py-2 text-right border-r border-slate-100 text-slate-500">--</td>
+              <td id="fash_tx_yoy" class="px-1.5 py-2 text-center border-r border-slate-200 font-bold">--</td>
+              <td id="out_tx_2025" class="px-1 py-2 text-right border-r border-slate-100 text-slate-800">--</td>
+              <td id="out_tx_2024" class="px-1 py-2 text-right border-r border-slate-100 text-slate-500">--</td>
+              <td id="out_tx_yoy" class="px-1.5 py-2 text-center border-r border-slate-200 font-bold">--</td>
+              <td id="tot_tx_2025" class="px-1 py-2 text-right border-r border-sky-100 text-sky-955 font-bold bg-sky-50/10">--</td>
+              <td id="tot_tx_2024" class="px-1 py-2 text-right border-r border-sky-100 text-slate-500 bg-sky-50/10">--</td>
+              <td id="tot_tx_yoy" class="px-1.5 py-2 text-center font-extrabold bg-sky-50/30">--</td>
+            </tr>
+            <!-- Conversion Rate (CR%) -->
+            <tr class="hover:bg-slate-50/50 transition-colors">
+              <td class="p-1.5 pl-3 border-r border-slate-200 font-bold text-slate-800 flex items-center justify-between pr-1.5">
+                <span class="flex items-center space-x-1.5">
+                  <span class="w-1.5 h-6 bg-sky-400 rounded-xs"></span>
+                  <span>Conversion Rate (CR%)</span>
+                </span>
+                <span id="crBadge" class="hidden text-[9px] font-bold text-slate-400 border border-slate-200 bg-slate-100 px-1.5 py-0.5 rounded uppercase tracking-wider">Store Total</span>
+              </td>
+              <td id="perf_cr_2025" class="px-1 py-2 text-right border-r border-slate-100 text-slate-800">--</td>
+              <td id="perf_cr_2024" class="px-1 py-2 text-right border-r border-slate-100 text-slate-500">--</td>
+              <td id="perf_cr_yoy" class="px-1.5 py-2 text-center border-r border-slate-200 font-bold">--</td>
+              <td id="fash_cr_2025" class="px-1 py-2 text-right border-r border-slate-100 text-slate-800">--</td>
+              <td id="fash_cr_2024" class="px-1 py-2 text-right border-r border-slate-100 text-slate-500">--</td>
+              <td id="fash_cr_yoy" class="px-1.5 py-2 text-center border-r border-slate-200 font-bold">--</td>
+              <td id="out_cr_2025" class="px-1 py-2 text-right border-r border-slate-100 text-slate-800">--</td>
+              <td id="out_cr_2024" class="px-1 py-2 text-right border-r border-slate-100 text-slate-500">--</td>
+              <td id="out_cr_yoy" class="px-1.5 py-2 text-center border-r border-slate-200 font-bold">--</td>
+              <td id="tot_cr_2025" class="px-1 py-2 text-right border-r border-sky-100 text-sky-955 font-bold bg-sky-50/10">--</td>
+              <td id="tot_cr_2024" class="px-1 py-2 text-right border-r border-sky-100 text-slate-500 bg-sky-50/10">--</td>
+              <td id="tot_cr_yoy" class="px-1.5 py-2 text-center font-extrabold bg-sky-50/30">--</td>
+            </tr>
+            <!-- ATV -->
+            <tr class="hover:bg-slate-50/50 transition-colors">
+              <td class="p-1.5 pl-3 border-r border-slate-200 font-bold text-slate-800 flex items-center justify-between pr-1.5">
+                <span class="flex items-center space-x-1.5">
+                  <span class="w-1.5 h-6 bg-slate-400 rounded-xs"></span>
+                  <span>ATV (Average Ticket)</span>
+                </span>
+                <span id="atvBadge" class="hidden text-[9px] font-bold text-slate-400 border border-slate-200 bg-slate-100 px-1.5 py-0.5 rounded uppercase tracking-wider">Store Total</span>
+              </td>
+              <td id="perf_atv_2025" class="px-1 py-2 text-right border-r border-slate-100 text-slate-800">--</td>
+              <td id="perf_atv_2024" class="px-1 py-2 text-right border-r border-slate-100 text-slate-500">--</td>
+              <td id="perf_atv_yoy" class="px-1.5 py-2 text-center border-r border-slate-200 font-bold">--</td>
+              <td id="fash_atv_2025" class="px-1 py-2 text-right border-r border-slate-100 text-slate-800">--</td>
+              <td id="fash_atv_2024" class="px-1 py-2 text-right border-r border-slate-100 text-slate-500">--</td>
+              <td id="fash_atv_yoy" class="px-1.5 py-2 text-center border-r border-slate-200 font-bold">--</td>
+              <td id="out_atv_2025" class="px-1 py-2 text-right border-r border-slate-100 text-slate-800">--</td>
+              <td id="out_atv_2024" class="px-1 py-2 text-right border-r border-slate-100 text-slate-500">--</td>
+              <td id="out_atv_yoy" class="px-1.5 py-2 text-center border-r border-slate-200 font-bold">--</td>
+              <td id="tot_atv_2025" class="px-1 py-2 text-right border-r border-sky-100 text-sky-955 font-bold bg-sky-50/10">--</td>
+              <td id="tot_atv_2024" class="px-1 py-2 text-right border-r border-sky-100 text-slate-500 bg-sky-50/10">--</td>
+              <td id="tot_atv_yoy" class="px-1.5 py-2 text-center font-extrabold bg-sky-50/30">--</td>
+            </tr>
+            <!-- UPT -->
+            <tr class="hover:bg-slate-50/50 transition-colors">
+              <td class="p-1.5 pl-3 border-r border-slate-200 font-bold text-slate-800 flex items-center justify-between pr-1.5">
+                <span class="flex items-center space-x-1.5">
+                  <span class="w-1.5 h-6 bg-slate-400 rounded-xs"></span>
+                  <span>UPT (Units/Trans)</span>
+                </span>
+                <span id="uptBadge" class="hidden text-[9px] font-bold text-slate-400 border border-slate-200 bg-slate-100 px-1.5 py-0.5 rounded uppercase tracking-wider">Store Total</span>
+              </td>
+              <td id="perf_upt_2025" class="px-1 py-2 text-right border-r border-slate-100 text-slate-800">--</td>
+              <td id="perf_upt_2024" class="px-1 py-2 text-right border-r border-slate-100 text-slate-500">--</td>
+              <td id="perf_upt_yoy" class="px-1.5 py-2 text-center border-r border-slate-200 font-bold">--</td>
+              <td id="fash_upt_2025" class="px-1 py-2 text-right border-r border-slate-100 text-slate-800">--</td>
+              <td id="fash_upt_2024" class="px-1 py-2 text-right border-r border-slate-100 text-slate-500">--</td>
+              <td id="fash_upt_yoy" class="px-1.5 py-2 text-center border-r border-slate-200 font-bold">--</td>
+              <td id="out_upt_2025" class="px-1 py-2 text-right border-r border-slate-100 text-slate-800">--</td>
+              <td id="out_upt_2024" class="px-1 py-2 text-right border-r border-slate-100 text-slate-500">--</td>
+              <td id="out_upt_yoy" class="px-1.5 py-2 text-center border-r border-slate-200 font-bold">--</td>
+              <td id="tot_upt_2025" class="px-1 py-2 text-right border-r border-sky-100 text-sky-955 font-bold bg-sky-50/10">--</td>
+              <td id="tot_upt_2024" class="px-1 py-2 text-right border-r border-sky-100 text-slate-500 bg-sky-50/10">--</td>
+              <td id="tot_upt_yoy" class="px-1.5 py-2 text-center font-extrabold bg-sky-50/30">--</td>
+            </tr>
+
+            <!-- SECTION 3: PRICING & MIX -->
+            <tr class="bg-slate-50/50 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+              <td colspan="13" class="p-2 pl-4 border-r border-slate-200">Pricing &amp; Mix Analysis</td>
+            </tr>
+            <!-- NS @FP % (Full Price Mix) -->
+            <tr class="hover:bg-slate-50/50 transition-colors">
+              <td class="p-1.5 pl-3 border-r border-slate-200 font-bold text-slate-800 flex items-center justify-between pr-1.5">
+                <span class="flex items-center space-x-1.5">
+                  <span class="w-1.5 h-6 bg-indigo-500 rounded-xs"></span>
+                  <span>Full Price Net Sales Mix %</span>
+                </span>
+                <span id="fpBadge" class="hidden text-[9px] font-bold text-slate-400 border border-slate-200 bg-slate-100 px-1.5 py-0.5 rounded uppercase tracking-wider">Store Total</span>
+              </td>
+              <td id="perf_fp_2025" class="px-1 py-2 text-right border-r border-slate-100 text-slate-800">--</td>
+              <td id="perf_fp_2024" class="px-1 py-2 text-right border-r border-slate-100 text-slate-500">--</td>
+              <td id="perf_fp_yoy" class="px-1.5 py-2 text-center border-r border-slate-200 font-bold">--</td>
+              <td id="fash_fp_2025" class="px-1 py-2 text-right border-r border-slate-100 text-slate-800">--</td>
+              <td id="fash_fp_2024" class="px-1 py-2 text-right border-r border-slate-100 text-slate-500">--</td>
+              <td id="fash_fp_yoy" class="px-1.5 py-2 text-center border-r border-slate-200 font-bold">--</td>
+              <td id="out_fp_2025" class="px-1 py-2 text-right border-r border-slate-100 text-slate-800">--</td>
+              <td id="out_fp_2024" class="px-1 py-2 text-right border-r border-slate-100 text-slate-500">--</td>
+              <td id="out_fp_yoy" class="px-1.5 py-2 text-center border-r border-slate-200 font-bold">--</td>
+              <td id="tot_fp_2025" class="px-1 py-2 text-right border-r border-sky-100 text-sky-955 font-bold bg-sky-50/10">--</td>
+              <td id="tot_fp_2024" class="px-1 py-2 text-right border-r border-sky-100 text-slate-500 bg-sky-50/10">--</td>
+              <td id="tot_fp_yoy" class="px-1.5 py-2 text-center font-extrabold bg-sky-50/30">--</td>
+            </tr>
+
+          </tbody>
+        </table>
+      </div>
+      <div class="bg-slate-50 px-6 py-3 border-t border-slate-200 text-right">
+        <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">* Note: YoY column shows conditional growth: soft green for positive (▲) and soft red for negative (▼).</p>
+      </div>
+    </div>
+
+
+
+    <!-- Charts Panel (Trend & Categories) -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <!-- Line Chart: Net Sales Monthly Trend -->
+      <div class="bg-white rounded-xl shadow-xs border border-slate-200 p-5">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-4 mb-4">
+          <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wider flex items-center">
+            <span class="w-2.5 h-2.5 bg-emerald-500 rounded-full mr-2"></span>
+            <span id="trendChartTitle">Sales</span>&nbsp;Monthly Performance
+          </h3>
+          <div class="flex items-center space-x-3">
+            <div class="flex bg-slate-100 p-0.5 rounded-md text-[10px] font-bold">
+              <button type="button" id="btn-trend-ns" onclick="setTrendMetric('NS')" class="px-2 py-1 rounded bg-slate-900 text-white cursor-pointer select-none">Sales ($)</button>
+              <button type="button" id="btn-trend-nq" onclick="setTrendMetric('NQ')" class="px-2 py-1 rounded text-slate-500 hover:text-slate-900 cursor-pointer select-none">Qty (Units)</button>
+            </div>
+            <span id="trendChartYearBadge" class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">--</span>
+          </div>
+        </div>
+        <div class="h-80 relative">
+          <canvas id="trendChartCanvas"></canvas>
+        </div>
+      </div>
+
+      <!-- Bar Chart: Category Breakdown -->
+      <div class="bg-white rounded-xl shadow-xs border border-slate-200 p-5">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between border-b border-slate-100 pb-4 mb-4 gap-3">
+          <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wider flex items-center">
+            <span class="w-2.5 h-2.5 bg-sky-500 rounded-full mr-2"></span>
+            <span id="catChartTitle">Categories</span>&nbsp;Comparison
+          </h3>
+          <div class="flex flex-wrap items-center gap-3">
+            <!-- Dimension Selector -->
+            <div class="flex bg-slate-100 p-0.5 rounded-md text-[10px] font-bold">
+              <button type="button" id="btn-catdim-category" onclick="setCategoryDimension('category')" class="px-2 py-1 rounded bg-slate-900 text-white cursor-pointer select-none">Category</button>
+              <button type="button" id="btn-catdim-division" onclick="setCategoryDimension('division')" class="px-2 py-1 rounded text-slate-500 hover:text-slate-900 cursor-pointer select-none">Division</button>
+              <button type="button" id="btn-catdim-gender" onclick="setCategoryDimension('gender')" class="px-2 py-1 rounded text-slate-500 hover:text-slate-900 cursor-pointer select-none">Gender</button>
+            </div>
+            <!-- Metric Selector -->
+            <div class="flex bg-slate-100 p-0.5 rounded-md text-[10px] font-bold">
+              <button type="button" id="btn-cat-ns" onclick="setCategoryMetric('NS')" class="px-2 py-1 rounded bg-slate-900 text-white cursor-pointer select-none">Sales ($)</button>
+              <button type="button" id="btn-cat-nq" onclick="setCategoryMetric('NQ')" class="px-2 py-1 rounded text-slate-500 hover:text-slate-900 cursor-pointer select-none">Qty (Units)</button>
+            </div>
+            <span id="catChartYearBadge" class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">--</span>
+          </div>
+        </div>
+        <div class="h-80 relative">
+          <canvas id="categoryChartCanvas"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Target Year Business Share Analysis -->
+    <div class="bg-white rounded-xl shadow-xs border border-slate-200 p-5 space-y-4">
+      <div class="border-b border-slate-100 pb-3 flex items-center justify-between">
+        <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wider flex items-center">
+          <span class="w-2.5 h-2.5 bg-indigo-500 rounded-full mr-2"></span>
+          <span class="lbl-target-year">2025</span>&nbsp;Share of Business
+        </h3>
+        <div class="flex items-center space-x-3">
+          <div class="flex bg-slate-100 p-0.5 rounded-md text-[10px] font-bold">
+            <button type="button" id="btn-share-ns" onclick="setShareMetric('NS')" class="px-2 py-1 rounded bg-slate-900 text-white cursor-pointer select-none">Sales ($)</button>
+            <button type="button" id="btn-share-nq" onclick="setShareMetric('NQ')" class="px-2 py-1 rounded text-slate-500 hover:text-slate-900 cursor-pointer select-none">Qty (Units)</button>
+          </div>
+          <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Dynamic Contribution</span>
+        </div>
+      </div>
+      
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Categories Share -->
+        <div class="bg-slate-50/50 rounded-lg p-4 border border-slate-100 space-y-3">
+          <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider border-b border-slate-200/60 pb-1.5 flex items-center">
+            <span class="w-1.5 h-4 bg-sky-500 rounded-xs mr-1.5"></span> Categories
+          </h4>
+          <div class="h-44 relative">
+            <canvas id="shareCategoriesCanvas"></canvas>
+          </div>
+        </div>
+
+        <!-- Divisions Share -->
+        <div class="bg-slate-50/50 rounded-lg p-4 border border-slate-100 space-y-3">
+          <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider border-b border-slate-200/60 pb-1.5 flex items-center">
+            <span class="w-1.5 h-4 bg-indigo-500 rounded-xs mr-1.5"></span> Divisions
+          </h4>
+          <div class="h-44 relative">
+            <canvas id="shareDivisionsCanvas"></canvas>
+          </div>
+        </div>
+
+        <!-- Gender Share -->
+        <div class="bg-slate-50/50 rounded-lg p-4 border border-slate-100 space-y-3">
+          <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider border-b border-slate-200/60 pb-1.5 flex items-center">
+            <span class="w-1.5 h-4 bg-emerald-500 rounded-xs mr-1.5"></span> Gender
+          </h4>
+          <div class="h-44 relative">
+            <canvas id="shareGendersCanvas"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Merchandising Breakdown Tables Card -->
+    <div class="bg-white rounded-xl shadow-xs border border-slate-200 overflow-hidden">
+      <!-- Header / Tabs -->
+      <div class="border-b border-slate-200 bg-slate-50 px-6 py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wider flex items-center">
+          <span class="w-2.5 h-2.5 bg-slate-600 rounded-full mr-2"></span>
+          Merchandising Hierarchy Benchmarks
+        </h3>
+        <!-- Tab Selector -->
+        <div class="flex bg-slate-200 p-0.5 rounded-lg text-xs font-semibold">
+          <button id="tab-category" onclick="switchBreakdownTab('category')" class="px-4 py-1.5 rounded-md transition-colors bg-white text-slate-900 shadow-xs cursor-pointer">Category</button>
+          <button id="tab-division" onclick="switchBreakdownTab('division')" class="px-4 py-1.5 rounded-md transition-colors text-slate-500 hover:text-slate-900 cursor-pointer">Division</button>
+          <button id="tab-gender" onclick="switchBreakdownTab('gender')" class="px-4 py-1.5 rounded-md transition-colors text-slate-500 hover:text-slate-900 cursor-pointer">Gender</button>
+        </div>
+      </div>
+      
+      <!-- Breakdown Table Content -->
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="bg-slate-100 border-b border-slate-200 text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+              <th class="p-4" id="breakdown-header-name">Segment Name</th>
+              <th class="px-4 py-3 text-right"><span class="lbl-target-year">2025</span> Sales</th>
+              <th class="px-4 py-3 text-right">Share %</th>
+              <th class="px-4 py-3 text-center">YoY Sales</th>
+              <th class="px-4 py-3 text-right"><span class="lbl-target-year">2025</span> Units (NQ)</th>
+              <th class="px-4 py-3 text-center">YoY Units</th>
+              <th class="px-4 py-3 text-center"><span class="lbl-target-year">2025</span> Margin %</th>
+              <th class="px-4 py-3 text-center">YoY Margin (pp)</th>
+            </tr>
+          </thead>
+          <tbody id="breakdown-table-body" class="divide-y divide-slate-100 text-sm font-medium">
+            <!-- Dynamic Rows will be rendered by JS -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Product Group Best Sellers Card -->
+    <div class="bg-white rounded-xl shadow-xs border border-slate-200 overflow-hidden mt-6">
+      <!-- Header -->
+      <div class="border-b border-slate-200 bg-slate-50 px-6 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wider flex items-center">
+          <span class="w-2.5 h-2.5 bg-sky-600 rounded-full mr-2"></span>
+          <span class="lbl-target-year">2025</span>&nbsp;Best Selling Product Groups
+        </h3>
+        <span class="text-xs text-slate-400 font-semibold uppercase tracking-wider">Dynamic Ranking</span>
+      </div>
+      
+      <!-- Table content -->
+      <div class="overflow-x-auto max-h-96">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="bg-slate-100 border-b border-slate-200 text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+              <th class="p-3 text-center w-16">Rank</th>
+              <th class="p-3 w-64">Product Group</th>
+              <th id="hdr-best-ns" onclick="setBestSellersSort('NS')" class="px-4 py-3 text-right cursor-pointer select-none text-slate-900 font-extrabold bg-slate-50 w-44">Net Sales ($) <span class="text-sky-600 ml-1">▼</span></th>
+              <th class="px-4 py-3 text-center w-36">Sales YoY</th>
+              <th id="hdr-best-nq" onclick="setBestSellersSort('NQ')" class="px-4 py-3 text-right cursor-pointer select-none text-slate-500 hover:text-slate-800 font-bold w-44">Net Quantity (Units) <span class="text-slate-300 ml-1">⇅</span></th>
+              <th class="px-4 py-3 text-center w-36">Qty YoY</th>
+              <th class="px-4 py-3 text-right w-32">Margin %</th>
+            </tr>
+          </thead>
+          <tbody id="best-sellers-tbody" class="divide-y divide-slate-100 text-xs font-semibold">
+            <!-- Dynamic Rows will be rendered by JS -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-slate-900 text-slate-400 py-6 border-t border-slate-800 text-center text-xs mt-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <p class="font-semibold uppercase tracking-wider text-slate-500">Retail Performance Dashboard</p>
+      <p class="mt-1.5">Designed and Developed by Federico Bucayan | &copy; 2026</p>
+    </div>
+  </footer>
+
+  <!-- App Code Script -->
+  <script>
+    /* RETAIL_DATA_PLACEHOLDER */
+
+    // Mappings for column names to array indices
+    const kpiIdx = {};
+    KPI_COLS.forEach((col, idx) => { kpiIdx[col] = idx; });
+
+    const prodIdx = {};
+    PROD_COLS.forEach((col, idx) => { prodIdx[col] = idx; });
+
+    // Register ChartDataLabels plugin globally
+    Chart.register(ChartDataLabels);
+
+    // Disable animations in headless mode for instant screenshot rendering
+    if (navigator.webdriver) {
+      Chart.defaults.animation = false;
+    }
+
+    // Global charts
+    let trendChart = null;
+    let categoryChart = null;
+    let shareCatChart = null;
+    let shareDivChart = null;
+    let shareGenChart = null;
+
+    // Metric and Dimension toggle states
+    let trendMetric = 'NS';
+    let categoryMetric = 'NS';
+    let shareMetric = 'NS';
+    let categoryDimension = 'category';
+
+    window.setCategoryDimension = function(dimension) {
+      categoryDimension = dimension;
+      
+      const btnCat = document.getElementById('btn-catdim-category');
+      const btnDiv = document.getElementById('btn-catdim-division');
+      const btnGen = document.getElementById('btn-catdim-gender');
+      const titleSpan = document.getElementById('catChartTitle');
+
+      [btnCat, btnDiv, btnGen].forEach(btn => {
+        if (btn) btn.className = 'px-2 py-1 rounded text-slate-500 hover:text-slate-900 cursor-pointer select-none';
+      });
+
+      if (dimension === 'category') {
+        if (btnCat) btnCat.className = 'px-2 py-1 rounded bg-slate-900 text-white cursor-pointer select-none';
+        if (titleSpan) titleSpan.innerText = 'Categories';
+      } else if (dimension === 'division') {
+        if (btnDiv) btnDiv.className = 'px-2 py-1 rounded bg-slate-900 text-white cursor-pointer select-none';
+        if (titleSpan) titleSpan.innerText = 'Divisions';
+      } else {
+        if (btnGen) btnGen.className = 'px-2 py-1 rounded bg-slate-900 text-white cursor-pointer select-none';
+        if (titleSpan) titleSpan.innerText = 'Gender';
+      }
+
+      const storeFilter = document.getElementById('storeFilter').value;
+      renderCategoryChart(storeFilter);
+    };
+
+    // Toggle state setters
+    window.setTrendMetric = function(metric) {
+      trendMetric = metric;
+      const btnNS = document.getElementById('btn-trend-ns');
+      const btnNQ = document.getElementById('btn-trend-nq');
+      const trendTitle = document.getElementById('trendChartTitle');
+      
+      if (metric === 'NS') {
+        btnNS.className = 'px-2 py-1 rounded bg-slate-900 text-white cursor-pointer select-none';
+        btnNQ.className = 'px-2 py-1 rounded text-slate-500 hover:text-slate-900 cursor-pointer select-none';
+        trendTitle.innerText = 'Sales';
+      } else {
+        btnNS.className = 'px-2 py-1 rounded text-slate-500 hover:text-slate-900 cursor-pointer select-none';
+        btnNQ.className = 'px-2 py-1 rounded bg-slate-900 text-white cursor-pointer select-none';
+        trendTitle.innerText = 'Quantity';
+      }
+
+      const storeFilter = document.getElementById('storeFilter').value;
+      const categoryFilter = document.getElementById('categoryFilter').value;
+      renderMonthlyTrendChart(storeFilter, categoryFilter);
+    };
+
+    window.setCategoryMetric = function(metric) {
+      categoryMetric = metric;
+      const btnNS = document.getElementById('btn-cat-ns');
+      const btnNQ = document.getElementById('btn-cat-nq');
+      
+      if (metric === 'NS') {
+        btnNS.className = 'px-2 py-1 rounded bg-slate-900 text-white cursor-pointer select-none';
+        btnNQ.className = 'px-2 py-1 rounded text-slate-500 hover:text-slate-900 cursor-pointer select-none';
+      } else {
+        btnNS.className = 'px-2 py-1 rounded text-slate-500 hover:text-slate-900 cursor-pointer select-none';
+        btnNQ.className = 'px-2 py-1 rounded bg-slate-900 text-white cursor-pointer select-none';
+      }
+
+      const storeFilter = document.getElementById('storeFilter').value;
+      renderCategoryChart(storeFilter);
+    };
+
+    window.setShareMetric = function(metric) {
+      shareMetric = metric;
+      const btnNS = document.getElementById('btn-share-ns');
+      const btnNQ = document.getElementById('btn-share-nq');
+      
+      if (metric === 'NS') {
+        btnNS.className = 'px-2 py-1 rounded bg-slate-900 text-white cursor-pointer select-none';
+        btnNQ.className = 'px-2 py-1 rounded text-slate-500 hover:text-slate-900 cursor-pointer select-none';
+      } else {
+        btnNS.className = 'px-2 py-1 rounded text-slate-500 hover:text-slate-900 cursor-pointer select-none';
+        btnNQ.className = 'px-2 py-1 rounded bg-slate-900 text-white cursor-pointer select-none';
+      }
+
+      const storeFilter = document.getElementById('storeFilter').value;
+      updateBusinessShareSection(storeFilter);
+    };
+
+    // Active Tab State
+    let activeBreakdownTab = 'category';
+
+    // Multi-Select Months state
+    let activeMonths = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+
+    // Formatting utilities
+    function formatCurrency(val) {
+      return '$' + Math.round(val).toLocaleString('en-US');
+    }
+
+    function formatCurrencyWithDecimals(val) {
+      return '$' + val.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+    }
+
+    function formatNumber(val) {
+      return Math.round(val).toLocaleString('en-US');
+    }
+
+    function formatNumberWithDecimals(val) {
+      return val.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+    }
+
+    function formatPercent(val) {
+      return (val * 100).toFixed(1) + '%';
+    }
+
+    function formatYoYPercent(val) {
+      if (val === null || val === undefined || isNaN(val) || !isFinite(val)) return '0.0%';
+      const sign = val >= 0 ? '+' : '';
+      return `${sign}${(val * 100).toFixed(1)}%`;
+    }
+
+    // Double check pp format has 1 decimal
+    function formatYoYPP(val) {
+      if (val === null || val === undefined || isNaN(val) || !isFinite(val)) return '0.0 pp';
+      const sign = val >= 0 ? '+' : '';
+      return `${sign}${(val * 100).toFixed(1)} pp`;
+    }
+
+    function formatYoYUnits(val) {
+      if (val === null || val === undefined || isNaN(val) || !isFinite(val)) return '0.0';
+      const sign = val >= 0 ? '+' : '';
+      return `${sign}${val.toFixed(1)}`;
+    }
+
+    function getYoYBadgeHTML(val, type = 'percent') {
+      let text = '';
+      if (type === 'pp') {
+        text = formatYoYPP(val);
+      } else if (type === 'units') {
+        text = formatYoYUnits(val);
+      } else {
+        text = formatYoYPercent(val);
+      }
+
+      if (val > 0.00001) {
+        return `<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">▲ ${text}</span>`;
+      } else if (val < -0.00001) {
+        return `<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200">▼ ${text}</span>`;
+      } else {
+        return `<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-slate-100 text-slate-500 border border-slate-200 font-medium">─ ${text}</span>`;
+      }
+    }
+
+    // Helper to check if a month matches the active month filter
+    function monthMatches(month) {
+      return activeMonths.includes(month);
+    }
+
+    // Get stats for a specific store and active filters
+    // If singleMonthOverride is specified (e.g., in line chart rendering), we check that month only, bypassing active months
+    function getStoreStats(storeName, categoryFilter, singleMonthOverride = null) {
+      const checkStore = (s) => (storeName === 'Total RET' || storeName === 'All' || s === storeName);
+      const checkMonth = (m) => (singleMonthOverride ? (m === singleMonthOverride) : monthMatches(m));
+      
+      const targetYear = parseInt(document.getElementById('yearFilter').value) || 2025;
+      const compYear = targetYear - 1;
+
+      let stats = {
+        target: { NS: 0, NQ: 0, Traffic: 0, Transactions: 0, SM: 0, NS_FP: 0, NQ_FP: 0 },
+        comp: { NS: 0, NQ: 0, Traffic: 0, Transactions: 0, SM: 0, NS_FP: 0, NQ_FP: 0 }
+      };
+
+      // Aggregate store-level KPIs
+      KPI_DATA.forEach(row => {
+        const sName = row[kpiIdx['Store Name']];
+        const year = row[kpiIdx['Year']];
+        const month = row[kpiIdx['Month']];
+
+        if (checkStore(sName) && checkMonth(month)) {
+          if (year === targetYear) {
+            stats.target.Traffic += row[kpiIdx['Traffic']];
+            stats.target.Transactions += row[kpiIdx['Transactions']];
+            stats.target.NS_FP += row[kpiIdx['NS @FP']];
+            stats.target.NQ_FP += row[kpiIdx['NQ @FP']];
+            
+            if (categoryFilter === 'All') {
+              stats.target.NS += row[kpiIdx['NS']];
+              stats.target.NQ += row[kpiIdx['NQ']];
+              stats.target.SM += row[kpiIdx['SM']];
+            }
+          } else if (year === compYear) {
+            stats.comp.Traffic += row[kpiIdx['Traffic']];
+            stats.comp.Transactions += row[kpiIdx['Transactions']];
+            stats.comp.NS_FP += row[kpiIdx['NS @FP']];
+            stats.comp.NQ_FP += row[kpiIdx['NQ @FP']];
+            
+            if (categoryFilter === 'All') {
+              stats.comp.NS += row[kpiIdx['NS']];
+              stats.comp.NQ += row[kpiIdx['NQ']];
+              stats.comp.SM += row[kpiIdx['SM']];
+            }
+          }
+        }
+      });
+
+      // Aggregate from Product Data if Category filter is active
+      if (categoryFilter !== 'All') {
+        PROD_DATA.forEach(row => {
+          const sName = row[prodIdx['Store Name']];
+          const catName = row[prodIdx['Category']];
+          const year = row[prodIdx['Year']];
+          const month = row[prodIdx['Month']];
+
+          if (checkStore(sName) && catName === categoryFilter && checkMonth(month)) {
+            if (year === targetYear) {
+              stats.target.NS += row[prodIdx['NS']];
+              stats.target.NQ += row[prodIdx['NQ']];
+              stats.target.SM += row[prodIdx['SM']];
+            } else if (year === compYear) {
+              stats.comp.NS += row[prodIdx['NS']];
+              stats.comp.NQ += row[prodIdx['NQ']];
+              stats.comp.SM += row[prodIdx['SM']];
+            }
+          }
+        });
+      }
+
+      return stats;
+    }
+
+    // Refresh Dashboard Elements
+    function updateDashboard() {
+      const storeFilter = document.getElementById('storeFilter').value;
+      const categoryFilter = document.getElementById('categoryFilter').value;
+      const targetYear = parseInt(document.getElementById('yearFilter').value) || 2025;
+      const compYear = targetYear - 1;
+
+      // Update Year dynamic labels in UI
+      document.querySelectorAll('.hdr-target').forEach(el => el.innerText = targetYear);
+      document.querySelectorAll('.hdr-comp').forEach(el => el.innerText = compYear);
+      document.querySelectorAll('.lbl-target-year').forEach(el => el.innerText = targetYear);
+      document.querySelectorAll('.lbl-comp-year').forEach(el => el.innerText = compYear);
+      
+      document.getElementById('trendChartYearBadge').innerText = `${compYear} vs ${targetYear}`;
+      document.getElementById('catChartYearBadge').innerText = `${compYear} vs ${targetYear} NS`;
+
+      // Badges for store level indicators
+      const trafficBadge = document.getElementById('trafficBadge');
+      const transBadge = document.getElementById('transBadge');
+      const crBadge = document.getElementById('crBadge');
+      const atvBadge = document.getElementById('atvBadge');
+      const uptBadge = document.getElementById('uptBadge');
+      const fpBadge = document.getElementById('fpBadge');
+
+      const kpiConvBadge = document.getElementById('kpiConvBadge');
+      const kpiUptBadge = document.getElementById('kpiUptBadge');
+      const kpiFpBadge = document.getElementById('kpiFpBadge');
+
+      if (categoryFilter !== 'All') {
+        trafficBadge.classList.remove('hidden');
+        transBadge.classList.remove('hidden');
+        crBadge.classList.remove('hidden');
+        atvBadge.classList.remove('hidden');
+        uptBadge.classList.remove('hidden');
+        fpBadge.classList.remove('hidden');
+        
+        if (kpiConvBadge) kpiConvBadge.classList.remove('hidden');
+        if (kpiUptBadge) kpiUptBadge.classList.remove('hidden');
+        if (kpiFpBadge) kpiFpBadge.classList.remove('hidden');
+      } else {
+        trafficBadge.classList.add('hidden');
+        transBadge.classList.add('hidden');
+        crBadge.classList.add('hidden');
+        atvBadge.classList.add('hidden');
+        uptBadge.classList.add('hidden');
+        fpBadge.classList.add('hidden');
+
+        if (kpiConvBadge) kpiConvBadge.classList.add('hidden');
+        if (kpiUptBadge) kpiUptBadge.classList.add('hidden');
+        if (kpiFpBadge) kpiFpBadge.classList.add('hidden');
+      }
+
+      // 1. POPULATE YOY MATRIX
+      const storesList = ['Performance Store', 'Fashion Store', 'Outlet Store', 'Total RET'];
+      const storePrefixes = {
+        'Performance Store': 'perf',
+        'Fashion Store': 'fash',
+        'Outlet Store': 'out',
+        'Total RET': 'tot'
+      };
+
+      storesList.forEach(store => {
+        const stats = getStoreStats(store, categoryFilter);
+        const prefix = storePrefixes[store];
+
+        // Core metric values
+        const ns25 = stats.target.NS;
+        const ns24 = stats.comp.NS;
+        const nq25 = stats.target.NQ;
+        const nq24 = stats.comp.NQ;
+        const sm25 = stats.target.SM;
+        const sm24 = stats.comp.SM;
+        const tf25 = stats.target.Traffic;
+        const tf24 = stats.comp.Traffic;
+        const tx25 = stats.target.Transactions;
+        const tx24 = stats.comp.Transactions;
+        const fpns25 = stats.target.NS_FP;
+        const fpns24 = stats.comp.NS_FP;
+
+        // Derived metric values
+        const asp25 = nq25 ? (ns25 / nq25) : 0;
+        const asp24 = nq24 ? (ns24 / nq24) : 0;
+        
+        const smpct25 = ns25 ? (sm25 / ns25) : 0;
+        const smpct24 = ns24 ? (sm24 / ns24) : 0;
+
+        const crpct25 = tf25 ? (tx25 / tf25) : 0;
+        const crpct24 = tf24 ? (tx24 / tf24) : 0;
+
+        const atv25 = tx25 ? (ns25 / tx25) : 0;
+        const atv24 = tx24 ? (ns24 / tx24) : 0;
+
+        const upt25 = tx25 ? (nq25 / tx25) : 0;
+        const upt24 = tx24 ? (nq24 / tx24) : 0;
+
+        const fppct25 = ns25 ? (fpns25 / ns25) : 0;
+        const fppct24 = ns24 ? (fpns24 / ns24) : 0;
+
+        // Render cell helper
+        const renderCell = (id, text25, text24, yoyVal, yoyType) => {
+          document.getElementById(`${prefix}_${id}_2025`).innerText = text25;
+          document.getElementById(`${prefix}_${id}_2024`).innerText = text24;
+          document.getElementById(`${prefix}_${id}_yoy`).innerHTML = getYoYBadgeHTML(yoyVal, yoyType);
+        };
+
+        // NS
+        const nsYoY = ns24 ? (ns25 - ns24) / ns24 : 0;
+        renderCell('ns', formatCurrency(ns25), formatCurrency(ns24), nsYoY, 'percent');
+
+        // NQ
+        const nqYoY = nq24 ? (nq25 - nq24) / nq24 : 0;
+        renderCell('nq', formatNumber(nq25), formatNumber(nq24), nqYoY, 'percent');
+
+        // ASP
+        const aspYoY = asp24 ? (asp25 - asp24) / asp24 : 0;
+        renderCell('asp', formatCurrencyWithDecimals(asp25), formatCurrencyWithDecimals(asp24), aspYoY, 'percent');
+
+        // SM%
+        const smYoY = smpct25 - smpct24;
+        renderCell('sm', formatPercent(smpct25), formatPercent(smpct24), smYoY, 'pp');
+
+        // Traffic
+        const tfYoY = tf24 ? (tf25 - tf24) / tf24 : 0;
+        renderCell('tf', formatNumber(tf25), formatNumber(tf24), tfYoY, 'percent');
+
+        // Transactions
+        const txYoY = tx24 ? (tx25 - tx24) / tx24 : 0;
+        renderCell('tx', formatNumber(tx25), formatNumber(tx24), txYoY, 'percent');
+
+        // CR%
+        const crYoY = crpct25 - crpct24;
+        renderCell('cr', formatPercent(crpct25), formatPercent(crpct24), crYoY, 'pp');
+
+        // ATV
+        const atvYoY = atv24 ? (atv25 - atv24) / atv24 : 0;
+        renderCell('atv', formatCurrencyWithDecimals(atv25), formatCurrencyWithDecimals(atv24), atvYoY, 'percent');
+
+        // UPT
+        const uptYoY = upt25 - upt24;
+        renderCell('upt', formatNumberWithDecimals(upt25), formatNumberWithDecimals(upt24), uptYoY, 'units');
+
+        // NS @FP %
+        const fpYoY = fppct25 - fppct24;
+        renderCell('fp', formatPercent(fppct25), formatPercent(fppct24), fpYoY, 'pp');
+      });
+
+      // 2. POPULATE INDIVIDUAL KPI CARDS
+      const selectedStats = getStoreStats(storeFilter, categoryFilter);
+      
+      const updateKPICard = (cardId, m25, m24, isPP, isUnits = false) => {
+        const el2025 = document.getElementById(`kpi_${cardId}_2025`);
+        if (!el2025) return;
+        const el2024 = document.getElementById(`kpi_${cardId}_2024`);
+        const elYoY = document.getElementById(`kpi_${cardId}_yoy`);
+
+        const suffix = (cardId === 'conv' || cardId === 'margin' || cardId === 'fp') ? '%' : '';
+        const prefix = (cardId === 'aur') ? '$' : '';
+
+        const formatter = (v) => {
+          if (cardId === 'aur') return prefix + v.toFixed(1);
+          if (cardId === 'upt') return v.toFixed(1);
+          return v.toFixed(1) + suffix;
+        };
+
+        el2025.innerText = formatter(m25);
+        el2024.innerText = formatter(m24);
+
+        let diff = 0;
+        let yoyType = 'percent';
+        if (isPP) {
+          diff = (m25 - m24) / 100;
+          yoyType = 'pp';
+        } else if (isUnits) {
+          diff = m25 - m24;
+          yoyType = 'units';
+        } else {
+          diff = (m24 === 0) ? 0 : (m25 - m24) / m24;
+          yoyType = 'percent';
+        }
+
+        elYoY.innerHTML = getYoYBadgeHTML(diff, yoyType);
+      };
+
+      // Conversion Rate % = (Transactions / Traffic) * 100
+      const conv25 = selectedStats.target.Traffic ? (selectedStats.target.Transactions / selectedStats.target.Traffic * 100) : 0;
+      const conv24 = selectedStats.comp.Traffic ? (selectedStats.comp.Transactions / selectedStats.comp.Traffic * 100) : 0;
+      updateKPICard('conv', conv25, conv24, true);
+
+      // UPT = NQ / Transactions
+      const upt25 = selectedStats.target.Transactions ? (selectedStats.target.NQ / selectedStats.target.Transactions) : 0;
+      const upt24 = selectedStats.comp.Transactions ? (selectedStats.comp.NQ / selectedStats.comp.Transactions) : 0;
+      updateKPICard('upt', upt25, upt24, false, true);
+
+      // AUR = NS / NQ
+      const aur25 = selectedStats.target.NQ ? (selectedStats.target.NS / selectedStats.target.NQ) : 0;
+      const aur24 = selectedStats.comp.NQ ? (selectedStats.comp.NS / selectedStats.comp.NQ) : 0;
+      updateKPICard('aur', aur25, aur24, false);
+
+      // Margin % = SM / NS * 100
+      const marg25 = selectedStats.target.NS ? (selectedStats.target.SM / selectedStats.target.NS * 100) : 0;
+      const marg24 = selectedStats.comp.NS ? (selectedStats.comp.SM / selectedStats.comp.NS * 100) : 0;
+      updateKPICard('margin', marg25, marg24, true);
+
+      // Full Price Mix % = NS @FP / NS * 100
+      const fp25 = selectedStats.target.NS ? (selectedStats.target.NS_FP / selectedStats.target.NS * 100) : 0;
+      const fp24 = selectedStats.comp.NS ? (selectedStats.comp.NS_FP / selectedStats.comp.NS * 100) : 0;
+      updateKPICard('fp', fp25, fp24, true);
+
+      // 3. REBUILD CHARTS
+      renderMonthlyTrendChart(storeFilter, categoryFilter);
+      renderCategoryChart(storeFilter);
+
+      // 4. RENDER BREAKDOWN BENCHMARKS
+      renderBreakdownsTable(storeFilter);
+
+      // 5. UPDATE SHARE ANALYSIS SECTION
+      updateBusinessShareSection(storeFilter);
+
+      // 6. RENDER PRODUCT GROUP BEST SELLERS
+      renderBestSellersTable(storeFilter);
+    }
+
+    // Line Chart: Monthly Trend Performance
+    function renderMonthlyTrendChart(storeFilter, categoryFilter) {
+      const monthsList = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+      
+      const targetYear = parseInt(document.getElementById('yearFilter').value) || 2025;
+      const compYear = targetYear - 1;
+
+      let sales24 = Array(12).fill(0);
+      let sales25 = Array(12).fill(0);
+
+      monthsList.forEach((m, idx) => {
+        if (monthMatches(m)) {
+          const stats = getStoreStats(storeFilter, categoryFilter, m);
+          sales24[idx] = trendMetric === 'NS' ? stats.comp.NS : stats.comp.NQ;
+          sales25[idx] = trendMetric === 'NS' ? stats.target.NS : stats.target.NQ;
+        } else {
+          sales24[idx] = null;
+          sales25[idx] = null;
+        }
+      });
+
+      const ctx = document.getElementById('trendChartCanvas').getContext('2d');
+
+      if (trendChart) {
+        trendChart.destroy();
+      }
+
+      let labels = [...monthsList];
+      let data24 = [...sales24];
+      let data25 = [...sales25];
+
+      const metricLabel = trendMetric === 'NS' ? 'Net Sales ($)' : 'Net Qty (Units)';
+
+      trendChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              label: `${compYear} ${metricLabel}`,
+              data: data24,
+              borderColor: '#94a3b8',
+              backgroundColor: 'transparent',
+              borderWidth: 2,
+              borderDash: [5, 5],
+              tension: 0.3,
+              spanGaps: true,
+              pointBackgroundColor: '#94a3b8',
+            },
+            {
+              label: `${targetYear} ${metricLabel}`,
+              data: data25,
+              borderColor: '#10b981',
+              backgroundColor: 'rgba(16, 185, 129, 0.1)',
+              fill: true,
+              borderWidth: 3,
+              tension: 0.3,
+              spanGaps: true,
+              pointBackgroundColor: '#10b981',
+              pointRadius: 4,
+              pointHoverRadius: 6
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            datalabels: {
+              display: false
+            },
+            legend: {
+              position: 'top',
+              labels: {
+                font: { size: 11, weight: 'bold' },
+                color: '#475569'
+              }
+            },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  const label = context.dataset.label.split(' ')[0];
+                  const val = context.parsed.y;
+                  if (trendMetric === 'NS') {
+                    return label + ': ' + formatCurrency(val);
+                  } else {
+                    return label + ': ' + formatNumber(val) + ' pcs';
+                  }
+                }
+              }
+            }
+          },
+          scales: {
+            y: {
+              ticks: {
+                callback: function(value) {
+                  if (trendMetric === 'NS') {
+                    return '$' + (value / 1000).toLocaleString() + 'k';
+                  } else {
+                    return (value).toLocaleString() + ' pcs';
+                  }
+                },
+                color: '#64748b',
+                font: { size: 10 }
+              },
+              grid: { color: '#f1f5f9' }
+            },
+            x: {
+              ticks: { color: '#64748b', font: { size: 10 } },
+              grid: { display: false }
+            }
+          }
+        }
+      });
+    }
+
+    // Bar Chart: Categories Comparison (with Dynamic Dimensions & YoY tooltip calculation)
+    function renderCategoryChart(storeFilter) {
+      const targetYear = parseInt(document.getElementById('yearFilter').value) || 2025;
+      const compYear = targetYear - 1;
+
+      // Determine dimension index based on toggle selection
+      let dimIdx = prodIdx['Category'];
+      if (categoryDimension === 'division') dimIdx = prodIdx['Division'];
+      if (categoryDimension === 'gender') dimIdx = prodIdx['Gender'];
+
+      // Gather unique values dynamically
+      let dimValues = [];
+      PROD_DATA.forEach(row => {
+        const val = row[dimIdx];
+        if (val && !dimValues.includes(val)) {
+          dimValues.push(val);
+        }
+      });
+      dimValues.sort();
+
+      // Aggregate values
+      let sales24 = Array(dimValues.length).fill(0);
+      let sales25 = Array(dimValues.length).fill(0);
+
+      const checkStore = (s) => (storeFilter === 'All' || s === storeFilter);
+
+      PROD_DATA.forEach(row => {
+        const sName = row[prodIdx['Store Name']];
+        const val = row[dimIdx];
+        const year = row[prodIdx['Year']];
+        const month = row[prodIdx['Month']];
+        const ns = row[prodIdx['NS']];
+        const nq = row[prodIdx['NQ']];
+
+        if (checkStore(sName) && monthMatches(month)) {
+          const idx = dimValues.indexOf(val);
+          if (idx !== -1) {
+            if (year === targetYear) {
+              sales25[idx] += categoryMetric === 'NS' ? ns : nq;
+            } else if (year === compYear) {
+              sales24[idx] += categoryMetric === 'NS' ? ns : nq;
+            }
+          }
+        }
+      });
+
+      const ctx = document.getElementById('categoryChartCanvas').getContext('2d');
+
+      if (categoryChart) {
+        categoryChart.destroy();
+      }
+
+      const metricLabel = categoryMetric === 'NS' ? 'NS ($)' : 'NQ (Units)';
+
+      categoryChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: dimValues,
+          datasets: [
+            {
+              label: `${compYear} ${metricLabel}`,
+              data: sales24,
+              backgroundColor: '#cbd5e1',
+              borderColor: '#94a3b8',
+              borderWidth: 1,
+              borderRadius: 4
+            },
+            {
+              label: `${targetYear} ${metricLabel}`,
+              data: sales25,
+              backgroundColor: '#0284c7',
+              borderColor: '#0369a1',
+              borderWidth: 1,
+              borderRadius: 4
+            }
+          ]
+        },
+        plugins: [{
+          id: 'categoryGrowthLabels',
+          afterDatasetsDraw(chart) {
+            const { ctx, data } = chart;
+            ctx.save();
+            const metaTarget = chart.getDatasetMeta(1);
+            const datasetComp = data.datasets[0].data;
+            const datasetTarget = data.datasets[1].data;
+            
+            metaTarget.data.forEach((bar, index) => {
+              const valComp = datasetComp[index];
+              const valTarget = datasetTarget[index];
+              if (valTarget === null || valTarget === undefined || valTarget === 0) return;
+              
+              let growthStr = '';
+              let isPositive = true;
+              if (valComp > 0) {
+                const growth = (valTarget - valComp) / valComp;
+                isPositive = growth >= 0;
+                const sign = isPositive ? '+' : '';
+                growthStr = `${sign}${(growth * 100).toFixed(1)}%`;
+              } else {
+                growthStr = '+100%';
+              }
+
+              const { x, y } = bar.tooltipPosition();
+              ctx.fillStyle = isPositive ? '#047857' : '#be123c'; // Emerald-700 / Rose-700
+              ctx.font = 'bold 9px Inter, sans-serif';
+              ctx.textAlign = 'center';
+              ctx.fillText(growthStr, x, y - 6);
+            });
+            ctx.restore();
+          }
+        }],
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            datalabels: {
+              display: false
+            },
+            legend: {
+              position: 'top',
+              labels: {
+                font: { size: 11, weight: 'bold' },
+                color: '#475569'
+              }
+            },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  const label = context.dataset.label.split(' ')[0];
+                  const val = context.parsed.y;
+                  if (categoryMetric === 'NS') {
+                    return label + ': ' + formatCurrency(val);
+                  } else {
+                    return label + ': ' + formatNumber(val) + ' pcs';
+                  }
+                },
+                afterBody: function(context) {
+                  const segmentName = context[0].label;
+                  
+                  // Compute growth rates for both NS and NQ
+                  let targetStats = { NS: 0, NQ: 0 };
+                  let compStats = { NS: 0, NQ: 0 };
+
+                  PROD_DATA.forEach(row => {
+                    const sName = row[prodIdx['Store Name']];
+                    const val = row[dimIdx];
+                    const year = row[prodIdx['Year']];
+                    const month = row[prodIdx['Month']];
+                    const ns = row[prodIdx['NS']];
+                    const nq = row[prodIdx['NQ']];
+
+                    if (checkStore(sName) && val === segmentName && monthMatches(month)) {
+                      if (year === targetYear) {
+                        targetStats.NS += ns;
+                        targetStats.NQ += nq;
+                      } else if (year === compYear) {
+                        compStats.NS += ns;
+                        compStats.NQ += nq;
+                      }
+                    }
+                  });
+
+                  const nsGrowth = compStats.NS ? ((targetStats.NS - compStats.NS) / compStats.NS * 100) : 0;
+                  const nqGrowth = compStats.NQ ? ((targetStats.NQ - compStats.NQ) / compStats.NQ * 100) : 0;
+
+                  const nsSign = nsGrowth >= 0 ? '+' : '';
+                  const nqSign = nqGrowth >= 0 ? '+' : '';
+
+                  return [
+                    `NS YoY Growth: ${nsSign}${nsGrowth.toFixed(1)}%`,
+                    `NQ YoY Growth: ${nqSign}${nqGrowth.toFixed(1)}%`
+                  ];
+                }
+              }
+            }
+          },
+          scales: {
+            y: {
+              ticks: {
+                callback: function(value) {
+                  if (categoryMetric === 'NS') {
+                    return '$' + (value / 1000000).toFixed(1) + 'M';
+                  } else {
+                    return (value / 1000).toFixed(0) + 'k pcs';
+                  }
+                },
+                color: '#64748b',
+                font: { size: 10 }
+              },
+              grid: { color: '#f1f5f9' }
+            },
+            x: {
+              ticks: { color: '#64748b', font: { size: 10, weight: 'bold' } },
+              grid: { display: false }
+            }
+          }
+        }
+      });
+    }
+
+    // Switch Tab for Breakdown tables
+    function switchBreakdownTab(tabName) {
+      activeBreakdownTab = tabName;
+      
+      const tabs = ['category', 'division', 'gender'];
+      tabs.forEach(t => {
+        const btn = document.getElementById(`tab-${t}`);
+        if (t === tabName) {
+          btn.className = 'px-4 py-1.5 rounded-md transition-colors bg-white text-slate-900 shadow-xs cursor-pointer';
+        } else {
+          btn.className = 'px-4 py-1.5 rounded-md transition-colors text-slate-500 hover:text-slate-900 cursor-pointer';
+        }
+      });
+
+      const headerName = document.getElementById('breakdown-header-name');
+      headerName.innerText = tabName.charAt(0).toUpperCase() + tabName.slice(1) + ' Segment Name';
+
+      const storeFilter = document.getElementById('storeFilter').value;
+      renderBreakdownsTable(storeFilter);
+    }
+
+    // Render Benchmarks Breakdown Table
+    function renderBreakdownsTable(storeFilter) {
+      const checkStore = (s) => (storeFilter === 'All' || s === storeFilter);
+      
+      const targetYear = parseInt(document.getElementById('yearFilter').value) || 2025;
+      const compYear = targetYear - 1;
+
+      let aggColIdx = prodIdx['Category'];
+      if (activeBreakdownTab === 'division') aggColIdx = prodIdx['Division'];
+      if (activeBreakdownTab === 'gender') aggColIdx = prodIdx['Gender'];
+
+      let aggregates = {};
+
+      PROD_DATA.forEach(row => {
+        const sName = row[prodIdx['Store Name']];
+        const segName = row[aggColIdx];
+        const year = row[prodIdx['Year']];
+        const month = row[prodIdx['Month']];
+
+        if (checkStore(sName) && monthMatches(month)) {
+          if (!aggregates[segName]) {
+            aggregates[segName] = {
+              comp: { NS: 0, NQ: 0, SM: 0 },
+              target: { NS: 0, NQ: 0, SM: 0 }
+            };
+          }
+          if (year === targetYear) {
+            aggregates[segName].target.NS += row[prodIdx['NS']];
+            aggregates[segName].target.NQ += row[prodIdx['NQ']];
+            aggregates[segName].target.SM += row[prodIdx['SM']];
+          } else if (year === compYear) {
+            aggregates[segName].comp.NS += row[prodIdx['NS']];
+            aggregates[segName].comp.NQ += row[prodIdx['NQ']];
+            aggregates[segName].comp.SM += row[prodIdx['SM']];
+          }
+        }
+      });
+
+      let totalNS25 = 0;
+      Object.keys(aggregates).forEach(seg => {
+        totalNS25 += aggregates[seg].target.NS;
+      });
+
+      let sortedSegments = Object.keys(aggregates).map(seg => {
+        const segData = aggregates[seg];
+        const share = totalNS25 ? (segData.target.NS / totalNS25 * 100) : 0;
+        
+        const yoySales = segData.comp.NS ? ((segData.target.NS - segData.comp.NS) / segData.comp.NS) : 0;
+        const yoyUnits = segData.comp.NQ ? ((segData.target.NQ - segData.comp.NQ) / segData.comp.NQ) : 0;
+        
+        const margin25 = segData.target.NS ? (segData.target.SM / segData.target.NS * 100) : 0;
+        const margin24 = segData.comp.NS ? (segData.comp.SM / segData.comp.NS * 100) : 0;
+        const yoyMarginPP = (margin25 - margin24) / 100;
+
+        return {
+          name: seg,
+          ns25: segData.target.NS,
+          share: share,
+          yoySales: yoySales,
+          nq25: segData.target.NQ,
+          yoyUnits: yoyUnits,
+          margin25: margin25,
+          yoyMarginPP: yoyMarginPP
+        };
+      }).sort((a, b) => b.ns25 - a.ns25);
+
+      const tbody = document.getElementById('breakdown-table-body');
+      tbody.innerHTML = '';
+
+      if (sortedSegments.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" class="p-8 text-center text-slate-400 font-semibold uppercase tracking-wider">No Data Found for current filters</td></tr>`;
+        return;
+      }
+
+      sortedSegments.forEach(seg => {
+        const row = document.createElement('tr');
+        row.className = 'hover:bg-slate-50/50 transition-colors';
+        row.innerHTML = `
+          <td class="p-4 border-r border-slate-100 font-bold text-slate-800">${seg.name}</td>
+          <td class="px-4 py-3 text-right text-slate-900">${formatCurrency(seg.ns25)}</td>
+          <td class="px-4 py-3 text-right text-slate-500 font-semibold">${seg.share.toFixed(1)}%</td>
+          <td class="px-4 py-3 text-center">${getYoYBadgeHTML(seg.yoySales, 'percent')}</td>
+          <td class="px-4 py-3 text-right text-slate-800">${formatNumber(seg.nq25)}</td>
+          <td class="px-4 py-3 text-center">${getYoYBadgeHTML(seg.yoyUnits, 'percent')}</td>
+          <td class="px-4 py-3 text-center text-slate-800 font-bold">${seg.margin25.toFixed(1)}%</td>
+          <td class="px-4 py-3 text-center">${getYoYBadgeHTML(seg.yoyMarginPP, 'pp')}</td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    // Render dynamic share breakdown pie (doughnut) charts for Category, Division, Gender
+    function updateBusinessShareSection(storeFilter) {
+      const checkStore = (s) => (storeFilter === 'All' || s === storeFilter);
+      const targetYear = parseInt(document.getElementById('yearFilter').value) || 2025;
+
+      let catSales = {};
+      let divSales = {};
+      let genSales = {};
+      let totalTargetNS = 0;
+
+      PROD_DATA.forEach(row => {
+        const sName = row[prodIdx['Store Name']];
+        const cat = row[prodIdx['Category']];
+        const div = row[prodIdx['Division']];
+        const gen = row[prodIdx['Gender']];
+        const year = row[prodIdx['Year']];
+        const month = row[prodIdx['Month']];
+        const val = shareMetric === 'NS' ? row[prodIdx['NS']] : row[prodIdx['NQ']];
+
+        if (checkStore(sName) && monthMatches(month) && year === targetYear) {
+          totalTargetNS += val;
+          
+          catSales[cat] = (catSales[cat] || 0) + val;
+          divSales[div] = (divSales[div] || 0) + val;
+          genSales[gen] = (genSales[gen] || 0) + val;
+        }
+      });
+
+      const renderPieChart = (dataObj, canvasId, colors, currentChartRefSetter, currentChartRefGetter) => {
+        const canvasEl = document.getElementById(canvasId);
+        if (!canvasEl) return;
+        const ctx = canvasEl.getContext('2d');
+        
+        // Destroy existing chart
+        const existing = currentChartRefGetter();
+        if (existing) {
+          existing.destroy();
+        }
+
+        const sortedKeys = Object.keys(dataObj).sort((a, b) => dataObj[b] - dataObj[a]);
+        const labels = sortedKeys;
+        const data = sortedKeys.map(key => dataObj[key]);
+
+        if (totalTargetNS === 0 || labels.length === 0) {
+          return;
+        }
+
+        const newChart = new Chart(ctx, {
+          type: 'doughnut',
+          data: {
+            labels: labels,
+            datasets: [{
+              data: data,
+              backgroundColor: colors,
+              borderWidth: 1.5,
+              borderColor: '#ffffff',
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '55%',
+            plugins: {
+              datalabels: {
+                display: true,
+                color: '#ffffff',
+                font: {
+                  weight: 'bold',
+                  size: 9
+                },
+                formatter: (value, ctx) => {
+                  const total = ctx.dataset.data.reduce((a, b) => a + b, 0);
+                  const pctVal = total ? (value / total) * 100 : 0;
+                  return pctVal >= 4 ? pctVal.toFixed(1) + '%' : '';
+                }
+              },
+              legend: {
+                position: 'right',
+                labels: {
+                  boxWidth: 8,
+                  padding: 6,
+                  font: { size: 9, weight: 'semibold' },
+                  color: '#475569'
+                }
+              },
+              tooltip: {
+                callbacks: {
+                  label: function(context) {
+                    const label = context.label || '';
+                    const value = context.parsed;
+                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                    const pct = total ? ((value / total) * 100).toFixed(1) + '%' : '0.0%';
+                    if (shareMetric === 'NS') {
+                      return ` ${label}: ${formatCurrency(value)} (${pct})`;
+                    } else {
+                      return ` ${label}: ${formatNumber(value)} pcs (${pct})`;
+                    }
+                  }
+                }
+              }
+            }
+          }
+        });
+
+        currentChartRefSetter(newChart);
+      };
+
+      // Define Color Palettes
+      const catColors = ['#0284c7', '#0369a1', '#0ea5e9', '#38bdf8', '#7dd3fc'];
+      const divColors = ['#4f46e5', '#3730a3', '#6366f1', '#818cf8', '#a5b4fc'];
+      const genColors = ['#10b981', '#065f46', '#34d399', '#6ee7b7', '#a7f3d0'];
+
+      renderPieChart(catSales, 'shareCategoriesCanvas', catColors, (chart) => { shareCatChart = chart; }, () => shareCatChart);
+      renderPieChart(divSales, 'shareDivisionsCanvas', divColors, (chart) => { shareDivChart = chart; }, () => shareDivChart);
+      renderPieChart(genSales, 'shareGendersCanvas', genColors, (chart) => { shareGenChart = chart; }, () => shareGenChart);
+    }
+
+    // Best Sellers table sorting logic
+    let bestSellersSortCol = 'NS';
+
+    window.setBestSellersSort = function(colName) {
+      bestSellersSortCol = colName;
+      const storeFilter = document.getElementById('storeFilter').value;
+      renderBestSellersTable(storeFilter);
+    };
+
+    function renderBestSellersTable(storeFilter) {
+      const checkStore = (s) => (storeFilter === 'All' || s === storeFilter);
+      const targetYear = parseInt(document.getElementById('yearFilter').value) || 2025;
+      const compYear = targetYear - 1;
+
+      let groups = {};
+
+      PROD_DATA.forEach(row => {
+        const sName = row[prodIdx['Store Name']];
+        const pg = row[prodIdx['Product Group']];
+        const year = row[prodIdx['Year']];
+        const month = row[prodIdx['Month']];
+        const ns = row[prodIdx['NS']];
+        const nq = row[prodIdx['NQ']];
+        const sm = row[prodIdx['SM']];
+
+        if (checkStore(sName) && monthMatches(month)) {
+          if (year === targetYear) {
+            if (!groups[pg]) {
+              groups[pg] = { ns: 0, nq: 0, sm: 0, ns_comp: 0, nq_comp: 0 };
+            }
+            groups[pg].ns += ns;
+            groups[pg].nq += nq;
+            groups[pg].sm += sm;
+          } else if (year === compYear) {
+            if (!groups[pg]) {
+              groups[pg] = { ns: 0, nq: 0, sm: 0, ns_comp: 0, nq_comp: 0 };
+            }
+            groups[pg].ns_comp += ns;
+            groups[pg].nq_comp += nq;
+          }
+        }
+      });
+
+      // Convert to array
+      let list = Object.keys(groups).map(key => {
+        const g = groups[key];
+        const marginPct = g.ns ? (g.sm / g.ns * 100) : 0;
+        const nsYoY = g.ns_comp ? ((g.ns - g.ns_comp) / g.ns_comp) : 0;
+        const nqYoY = g.nq_comp ? ((g.nq - g.nq_comp) / g.nq_comp) : 0;
+        return {
+          name: key,
+          ns: g.ns,
+          nq: g.nq,
+          marginPct: marginPct,
+          nsYoY: nsYoY,
+          nqYoY: nqYoY
+        };
+      });
+
+      // Sort
+      if (bestSellersSortCol === 'NS') {
+        list.sort((a, b) => b.ns - a.ns);
+      } else {
+        list.sort((a, b) => b.nq - a.nq);
+      }
+
+      const tbody = document.getElementById('best-sellers-tbody');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+
+      // Update sorting header styles
+      const hdrNS = document.getElementById('hdr-best-ns');
+      const hdrNQ = document.getElementById('hdr-best-nq');
+      
+      if (hdrNS && hdrNQ) {
+        if (bestSellersSortCol === 'NS') {
+          hdrNS.innerHTML = 'Net Sales ($) <span class="text-sky-600 ml-1">▼</span>';
+          hdrNQ.innerHTML = 'Net Quantity (Units) <span class="text-slate-300 ml-1">⇅</span>';
+          hdrNS.className = "px-4 py-3 text-right cursor-pointer select-none text-slate-900 font-extrabold bg-slate-50 w-44";
+          hdrNQ.className = "px-4 py-3 text-right cursor-pointer select-none text-slate-500 hover:text-slate-800 font-bold w-44";
+        } else {
+          hdrNS.innerHTML = 'Net Sales ($) <span class="text-slate-300 ml-1">⇅</span>';
+          hdrNQ.innerHTML = 'Net Quantity (Units) <span class="text-sky-600 ml-1">▼</span>';
+          hdrNS.className = "px-4 py-3 text-right cursor-pointer select-none text-slate-500 hover:text-slate-800 font-bold w-44";
+          hdrNQ.className = "px-4 py-3 text-right cursor-pointer select-none text-slate-900 font-extrabold bg-slate-50 w-44";
+        }
+      }
+
+      if (list.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" class="p-8 text-center text-slate-400 font-semibold uppercase tracking-wider">No Data Found for current filters</td></tr>`;
+        return;
+      }
+
+      list.forEach((item, idx) => {
+        const row = document.createElement('tr');
+        row.className = 'hover:bg-slate-50/50 transition-colors border-b border-slate-100 last:border-0';
+        row.innerHTML = `
+          <td class="p-3 text-center border-r border-slate-100 font-bold text-slate-400">${idx + 1}</td>
+          <td class="p-3 border-r border-slate-100 font-semibold text-slate-800 uppercase text-xs tracking-wider">${item.name}</td>
+          <td class="px-4 py-3 text-right border-r border-slate-100 text-slate-900 font-bold ${bestSellersSortCol === 'NS' ? 'bg-slate-50/30' : ''}">${formatCurrency(item.ns)}</td>
+          <td class="px-4 py-3 text-center border-r border-slate-100">${getYoYBadgeHTML(item.nsYoY, 'percent')}</td>
+          <td class="px-4 py-3 text-right border-r border-slate-100 text-slate-700 font-bold ${bestSellersSortCol === 'NQ' ? 'bg-slate-50/30' : ''}">${formatNumber(item.nq)}</td>
+          <td class="px-4 py-3 text-center border-r border-slate-100">${getYoYBadgeHTML(item.nqYoY, 'percent')}</td>
+          <td class="px-4 py-3 text-right text-slate-600 font-bold">${item.marginPct.toFixed(1)}%</td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    // Initialize Dashboard
+    function initDashboard() {
+      // Find unique years in data to dynamically populate year selector
+      let availableYears = [];
+      KPI_DATA.forEach(row => {
+        const yr = row[kpiIdx['Year']];
+        if (!availableYears.includes(yr)) availableYears.push(yr);
+      });
+      PROD_DATA.forEach(row => {
+        const yr = row[prodIdx['Year']];
+        if (!availableYears.includes(yr)) availableYears.push(yr);
+      });
+      
+      // Sort descending
+      availableYears.sort((a, b) => b - a);
+
+      const yearFilter = document.getElementById('yearFilter');
+      yearFilter.innerHTML = '';
+      availableYears.forEach(yr => {
+        const opt = document.createElement('option');
+        opt.value = yr;
+        opt.innerText = yr;
+        yearFilter.appendChild(opt);
+      });
+
+      // Default to max year
+      if (availableYears.length > 0) {
+        yearFilter.value = availableYears[0];
+      }
+
+      // Add general filter change event listeners
+      document.getElementById('storeFilter').addEventListener('change', updateDashboard);
+      document.getElementById('yearFilter').addEventListener('change', updateDashboard);
+      document.getElementById('categoryFilter').addEventListener('change', updateDashboard);
+
+      // Custom multi-select dropdown Month/Season setup
+      const dropdownBtn = document.getElementById('monthDropdownBtn');
+      const dropdownMenu = document.getElementById('monthDropdownMenu');
+      const dropdownLabel = document.getElementById('monthDropdownLabel');
+      const monthCheckboxes = document.querySelectorAll('.month-checkbox');
+
+      // Open/close dropdown
+      dropdownBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        dropdownMenu.classList.toggle('hidden');
+      });
+
+      // Close if click outside
+      document.addEventListener('click', (e) => {
+        if (!dropdownMenu.contains(e.target) && e.target !== dropdownBtn && !dropdownBtn.contains(e.target)) {
+          dropdownMenu.classList.add('hidden');
+        }
+      });
+
+      // Synchronize checkboxes
+      monthCheckboxes.forEach(cb => {
+        cb.checked = true; // select all initially
+        cb.addEventListener('change', () => {
+          updateMonthsFromCheckboxes();
+        });
+      });
+
+      // Update label and dashboard based on checked checkboxes
+      function updateMonthsFromCheckboxes() {
+        activeMonths = [];
+        monthCheckboxes.forEach(cb => {
+          if (cb.checked) {
+            activeMonths.push(cb.value);
+          }
+        });
+        updateDropdownLabel();
+        updateDashboard();
+      }
+
+      function updateDropdownLabel() {
+        if (activeMonths.length === 12) {
+          dropdownLabel.innerText = 'All Months';
+        } else if (activeMonths.length === 0) {
+          dropdownLabel.innerText = 'No Months Selected';
+        } else if (activeMonths.length <= 3) {
+          dropdownLabel.innerText = activeMonths.join(', ');
+        } else {
+          dropdownLabel.innerText = `${activeMonths.length} Months Selected`;
+        }
+      }
+
+      // Expose quick select shortcuts globally
+      window.selectMonthsShortcut = function(type) {
+        const SS = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN'];
+        const AW = ['JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+        const Q1 = ['JAN', 'FEB', 'MAR'];
+        const Q2 = ['APR', 'MAY', 'JUN'];
+        const Q3 = ['JUL', 'AUG', 'SEP'];
+        const Q4 = ['OCT', 'NOV', 'DEC'];
+
+        monthCheckboxes.forEach(cb => {
+          if (type === 'All') cb.checked = true;
+          else if (type === 'Clear') cb.checked = false;
+          else if (type === 'SS') cb.checked = SS.includes(cb.value);
+          else if (type === 'AW') cb.checked = AW.includes(cb.value);
+          else if (type === 'Q1') cb.checked = Q1.includes(cb.value);
+          else if (type === 'Q2') cb.checked = Q2.includes(cb.value);
+          else if (type === 'Q3') cb.checked = Q3.includes(cb.value);
+          else if (type === 'Q4') cb.checked = Q4.includes(cb.value);
+        });
+
+        updateMonthsFromCheckboxes();
+      };
+
+      // Initial label set & render
+      updateDropdownLabel();
+      updateDashboard();
+    }
+
+    // Credits Modal Show/Hide functions
+    window.openCreditsModal = function() {
+      const modal = document.getElementById('creditsModal');
+      const card = document.getElementById('creditsModalCard');
+      modal.classList.remove('hidden');
+      setTimeout(() => {
+        card.classList.remove('scale-95', 'opacity-0');
+        card.classList.add('scale-100', 'opacity-100');
+      }, 10);
+    };
+
+    window.closeCreditsModal = function() {
+      const modal = document.getElementById('creditsModal');
+      const card = document.getElementById('creditsModalCard');
+      card.classList.remove('scale-100', 'opacity-100');
+      card.classList.add('scale-95', 'opacity-0');
+      setTimeout(() => {
+        modal.classList.add('hidden');
+      }, 300);
+    };
+
+    // Close modal on overlay click
+    window.addEventListener('DOMContentLoaded', () => {
+      const modal = document.getElementById('creditsModal');
+      if (modal) {
+        modal.addEventListener('click', (e) => {
+          if (e.target === modal) {
+            closeCreditsModal();
+          }
+        });
+      }
+    });
+
+    window.addEventListener('DOMContentLoaded', initDashboard);
+  </script>
+
+  <!-- About the Developer / Credits Modal -->
+  <div id="creditsModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-2xl border border-slate-200 w-full max-w-md overflow-hidden relative transform transition-all duration-300 scale-95 opacity-0" id="creditsModalCard">
+      <!-- Top header with close button -->
+      <div class="flex items-center justify-between border-b border-slate-100 px-6 py-4 bg-slate-50">
+        <h4 class="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center">
+          <span class="w-2.5 h-4 bg-sky-500 rounded-xs mr-2"></span> About the Creator
+        </h4>
+        <button onclick="closeCreditsModal()" class="text-slate-400 hover:text-slate-600 cursor-pointer font-bold text-lg select-none">&times;</button>
+      </div>
+      
+      <!-- Modal Content -->
+      <div class="p-6 space-y-6 text-center">
+        <!-- Avatar/Picture -->
+        <div class="flex justify-center">
+          <div class="relative w-24 h-24 rounded-full overflow-hidden border-2 border-sky-500 shadow-md bg-slate-100">
+            <img src="Reference_Material/Profile_Pic.jpg" alt="Federico Bucayan" class="w-full h-full object-cover" onerror="if(this.src.indexOf('Reference_Material')!==-1){this.src='Profile_Pic.jpg';}else{this.src='https://api.dicebear.com/7.x/bottts/svg?seed=Federico';}">
+          </div>
+        </div>
+        
+        <!-- Name & Bio -->
+        <div class="space-y-2">
+          <h3 class="text-base font-extrabold text-slate-900 uppercase tracking-wider">Federico Bucayan</h3>
+          <p class="text-xs font-bold text-sky-600 uppercase tracking-wider">Retail &amp; Supply Chain Planning Expert</p>
+          <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Data &amp; AI Enthusiast</p>
+          <p class="text-xs text-slate-500 leading-relaxed max-w-sm mx-auto font-medium pt-1.5">
+            I am a Retail and Supply Chain Planning professional who is also a passionate Data and AI enthusiast. Acting as the product manager in partnership with Google Antigravity (an agentic AI coding assistant), I built this interactive commercial scorecard from scratch without a coding background, aiming to leverage data analytics to support visibility and decision making.
+          </p>
+        </div>
+        
+        <!-- Social Link -->
+        <div class="pt-2">
+          <a href="https://www.linkedin.com/in/federico-bucayan" target="_blank" class="inline-flex items-center space-x-2 px-4 py-2 rounded-lg bg-sky-600 hover:bg-sky-700 text-white font-bold text-xs uppercase tracking-wider transition-colors cursor-pointer shadow-sm select-none">
+            <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
+              <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/>
+            </svg>
+            <span>LinkedIn Profile</span>
+          </a>
+        </div>
+      </div>
+      
+      <!-- Footer -->
+      <div class="bg-slate-900 text-slate-400 py-4 border-t border-slate-800 text-center text-[10px] font-semibold uppercase tracking-wider">
+        Designed and Developed by Federico Bucayan | &copy; 2026
+      </div>
+    </div>
+  </div>
+</body>
+</html>
