@@ -1,5 +1,7 @@
 # Retail Performance Scorecard & Visual Report
 
+🔗 [Live Interactive Dashboard Demo](https://federicobucayan.github.io/Retail-Performance-Dashboard/)
+
 An interactive YoY retail dashboard that aggregates multi-year sales spreadsheets, calculates commercial metrics dynamically, and displays store and category insights in a clean corporate visual interface.
 
 ## 🤖 Co-Created with AI (Vibe Coding Showcase)
