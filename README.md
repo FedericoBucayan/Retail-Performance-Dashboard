@@ -14,7 +14,7 @@ Instead of writing the code line-by-line, I used natural language instructions (
 * **Interactive Metric Toggles**: Toggles for Trend, Category, and Share charts to switch from Sales ($) to Quantity (Units) on-the-fly.
 * **Contribution Pie Charts**: Dynamic percentage contributions rendered directly on interactive doughnut charts (utilizing the Chart.js Datalabels plugin).
 * **Interactive Best Sellers Ranking**: A ranking list of product groups sortable by sales or quantity.
-* **Custom Months/Seasons Filter**: A checkbox dropdown filter featuring seasonal (SS, AW) and quarterly (Q1-Q4) quick-select shortcuts.
+* **Custom Months/Seasons Filter**: A checkbox dropdown filter featuring seasonal (SS, FW) and quarterly (Q1-Q4) quick-select shortcuts.
 * **Corporate Tailwind Styling**: Modern light-mode styling utilizing a sleek slate and white color scheme with navy and emerald highlights.
 
 This repository demonstrates the power of AI-assisted engineering and showcases how a retail and supply chain expert can orchestrate, test, and deploy a fully functional dashboard application from scratch.
