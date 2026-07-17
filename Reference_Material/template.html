@@ -107,7 +107,7 @@
                 <button type="button" onclick="selectMonthsShortcut('All')" class="bg-slate-100 hover:bg-slate-200 py-1.5 rounded cursor-pointer text-center select-none">All Months</button>
                 <button type="button" onclick="selectMonthsShortcut('Clear')" class="bg-slate-100 hover:bg-slate-200 py-1.5 rounded cursor-pointer text-center select-none">Clear All</button>
                 <button type="button" onclick="selectMonthsShortcut('SS')" class="bg-slate-100 hover:bg-slate-200 py-1.5 rounded cursor-pointer text-center select-none">SS (JAN-JUN)</button>
-                <button type="button" onclick="selectMonthsShortcut('AW')" class="bg-slate-100 hover:bg-slate-200 py-1.5 rounded cursor-pointer text-center select-none">AW (JUL-DEC)</button>
+                <button type="button" onclick="selectMonthsShortcut('FW')" class="bg-slate-100 hover:bg-slate-200 py-1.5 rounded cursor-pointer text-center select-none">FW (JUL-DEC)</button>
                 <button type="button" onclick="selectMonthsShortcut('Q1')" class="bg-slate-100 hover:bg-slate-200 py-1.5 rounded cursor-pointer text-center select-none">Q1 (JAN-MAR)</button>
                 <button type="button" onclick="selectMonthsShortcut('Q2')" class="bg-slate-100 hover:bg-slate-200 py-1.5 rounded cursor-pointer text-center select-none">Q2 (APR-JUN)</button>
                 <button type="button" onclick="selectMonthsShortcut('Q3')" class="bg-slate-100 hover:bg-slate-200 py-1.5 rounded cursor-pointer text-center select-none">Q3 (JUL-SEP)</button>
@@ -1832,7 +1832,7 @@
       // Expose quick select shortcuts globally
       window.selectMonthsShortcut = function(type) {
         const SS = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN'];
-        const AW = ['JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+        const FW = ['JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
         const Q1 = ['JAN', 'FEB', 'MAR'];
         const Q2 = ['APR', 'MAY', 'JUN'];
         const Q3 = ['JUL', 'AUG', 'SEP'];
@@ -1842,7 +1842,7 @@
           if (type === 'All') cb.checked = true;
           else if (type === 'Clear') cb.checked = false;
           else if (type === 'SS') cb.checked = SS.includes(cb.value);
-          else if (type === 'AW') cb.checked = AW.includes(cb.value);
+          else if (type === 'FW') cb.checked = FW.includes(cb.value);
           else if (type === 'Q1') cb.checked = Q1.includes(cb.value);
           else if (type === 'Q2') cb.checked = Q2.includes(cb.value);
           else if (type === 'Q3') cb.checked = Q3.includes(cb.value);

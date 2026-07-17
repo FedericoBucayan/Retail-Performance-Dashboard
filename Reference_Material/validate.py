@@ -11,10 +11,7 @@ if not os.path.exists(report_path):
     print("Error: index.html does not exist!")
     exit(1)
 
-with open(report_path, "r", encoding="utf-8") as f:
-    content = f.read()
-
-# Check elements
+# Fix 5: Stream line-by-line to check for elements without loading the full file into memory
 elements = [
     "RETAIL PERFORMANCE DASHBOARD",
     "storeFilter",
@@ -29,14 +26,25 @@ elements = [
     "PROD_DATA"
 ]
 
+found = {el: False for el in elements}
+
 print("=== Checking HTML Sections ===")
+with open(report_path, "r", encoding="utf-8") as f:
+    for line in f:
+        for el in elements:
+            if not found[el] and el in line:
+                found[el] = True
+
 for el in elements:
-    if el in content:
+    if found[el]:
         print(f"  [OK] Found: '{el}'")
     else:
         print(f"  [FAIL] Missing: '{el}'")
 
-# Extract KPI_DATA from HTML script
+# Only load full content for JSON data verification (needed for regex across lines)
+with open(report_path, "r", encoding="utf-8") as f:
+    content = f.read()
+
 kpi_match = re.search(r"const KPI_DATA = (\[.*?\]);", content)
 prod_match = re.search(r"const PROD_DATA = (\[.*?\]);", content)
 
@@ -50,3 +58,4 @@ else:
     print("\n[FAIL] Could not parse KPI_DATA or PROD_DATA variables!")
 
 print(f"\nValidation completed successfully. File size: {os.path.getsize(report_path)/1024:.2f} KB")
+

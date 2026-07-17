@@ -11,6 +11,11 @@ print("Loading KPI database...")
 kpi_df = pd.read_excel(os.path.join(workspace_dir, "RET_KPI_Sales_Database.xlsx"))
 kpi_cols = ["Store Name", "Year", "Month", "Traffic", "Transactions", "NS", "NS @FP", "NQ", "NQ @FP", "SM"]
 kpi_df[kpi_cols] = kpi_df[kpi_cols].fillna(0)
+
+# Fix 1: Round numeric columns to 2 decimal places to eliminate float precision artifacts
+kpi_num_cols = ["Traffic", "Transactions", "NS", "NS @FP", "NQ", "NQ @FP", "SM"]
+kpi_df[kpi_num_cols] = kpi_df[kpi_num_cols].round(2)
+
 kpi_data = kpi_df[kpi_cols].values.tolist()
 
 print("Loading Product database...")
@@ -21,6 +26,17 @@ prod_sum_cols = ["NS", "NQ", "SM"]
 prod_df[prod_sum_cols] = prod_df[prod_sum_cols].fillna(0)
 print("Grouping product records by Product Group...")
 agg_df = prod_df.groupby(prod_groupby_cols)[prod_sum_cols].sum().reset_index()
+
+# Fix 1: Round numeric columns to 2 decimal places
+agg_df[prod_sum_cols] = agg_df[prod_sum_cols].round(2)
+
+# Fix 3: Drop zero-value rows (NS=0, NQ=0, SM=0) — they contribute nothing to any output
+before_count = len(agg_df)
+agg_df = agg_df[(agg_df["NS"] != 0) | (agg_df["NQ"] != 0) | (agg_df["SM"] != 0)]
+dropped = before_count - len(agg_df)
+if dropped > 0:
+    print(f"Dropped {dropped} zero-value rows from PROD_DATA.")
+
 prod_cols = prod_groupby_cols + prod_sum_cols
 prod_data = agg_df[prod_cols].values.tolist()
 
@@ -34,3 +50,4 @@ with open(output_path, "w", encoding="utf-8") as f:
     f.write(f"const PROD_DATA = {json.dumps(prod_data)};\n")
 
 print("Successfully regenerated data_vars.js!")
+
