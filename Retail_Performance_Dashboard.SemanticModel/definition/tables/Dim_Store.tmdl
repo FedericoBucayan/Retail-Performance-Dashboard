@@ -1,0 +1,27 @@
+table Dim_Store
+	lineageTag: a1b2c3d4-0002-4000-8000-000000000001
+
+	column 'Store Name'
+		dataType: string
+		isKey
+		lineageTag: a1b2c3d4-0002-4000-8000-000000000002
+		summarizeBy: none
+		sourceColumn: Store Name
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Dim_Store = m
+		mode: import
+		source =
+				let
+					Source = Table.FromRows({
+						{"Fashion Store"},
+						{"Outlet Store"},
+						{"Performance Store"}
+					}, {"Store Name"}),
+					ChangedType = Table.TransformColumnTypes(Source, {{"Store Name", type text}})
+				in
+					ChangedType
+
+	annotation PBI_Id = a1b2c3d4-0002-4000-8000-000000000000
+

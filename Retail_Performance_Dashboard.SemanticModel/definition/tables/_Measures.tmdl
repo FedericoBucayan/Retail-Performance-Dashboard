@@ -1,0 +1,125 @@
+table _Measures
+	lineageTag: a1b2c3d4-0006-4000-8000-000000000001
+
+	measure 'Total Net Sales' = SUM(Fact_KPI_Sales[NS])
+		formatString: \$#,##0.00
+		displayFolder: 01 KPI Measures
+		lineageTag: m1000000-0000-0000-0000-000000000001
+
+	measure 'Total Net Quantity' = SUM(Fact_KPI_Sales[NQ])
+		formatString: #,##0
+		displayFolder: 01 KPI Measures
+		lineageTag: m1000000-0000-0000-0000-000000000002
+
+	measure 'Total Traffic' = SUM(Fact_KPI_Sales[Traffic])
+		formatString: #,##0
+		displayFolder: 01 KPI Measures
+		lineageTag: m1000000-0000-0000-0000-000000000003
+
+	measure 'Total Transactions' = SUM(Fact_KPI_Sales[Transactions])
+		formatString: #,##0
+		displayFolder: 01 KPI Measures
+		lineageTag: m1000000-0000-0000-0000-000000000004
+
+	measure 'Total Standard Margin' = SUM(Fact_KPI_Sales[SM])
+		formatString: \$#,##0.00
+		displayFolder: 01 KPI Measures
+		lineageTag: m1000000-0000-0000-0000-000000000005
+
+	measure 'NS Full Price' = SUM(Fact_KPI_Sales[NS @FP])
+		formatString: \$#,##0.00
+		displayFolder: 01 KPI Measures
+		lineageTag: m1000000-0000-0000-0000-000000000006
+
+	measure 'NQ Full Price' = SUM(Fact_KPI_Sales[NQ @FP])
+		formatString: #,##0
+		displayFolder: 01 KPI Measures
+		lineageTag: m1000000-0000-0000-0000-000000000007
+
+	measure 'Conversion Rate %' = DIVIDE([Total Transactions], [Total Traffic], 0)
+		formatString: 0.0%
+		displayFolder: 03 Unit & Pricing Metrics
+		lineageTag: m1000000-0000-0000-0000-000000000008
+
+	measure UPT = DIVIDE([Total Net Quantity], [Total Transactions], 0)
+		formatString: 0.00
+		displayFolder: 03 Unit & Pricing Metrics
+		lineageTag: m1000000-0000-0000-0000-000000000009
+
+	measure ATV = DIVIDE([Total Net Sales], [Total Transactions], 0)
+		formatString: \$#,##0.00
+		displayFolder: 03 Unit & Pricing Metrics
+		lineageTag: m1000000-0000-0000-0000-000000000010
+
+	measure ASP = DIVIDE([Total Net Sales], [Total Net Quantity], 0)
+		formatString: \$#,##0.00
+		displayFolder: 03 Unit & Pricing Metrics
+		lineageTag: m1000000-0000-0000-0000-000000000011
+
+	measure 'Standard Margin %' = DIVIDE([Total Standard Margin], [Total Net Sales], 0)
+		formatString: 0.0%
+		displayFolder: 04 Merchandising
+		lineageTag: m1000000-0000-0000-0000-000000000012
+
+	measure 'Full Price Mix %' = DIVIDE([NS Full Price], [Total Net Sales], 0)
+		formatString: 0.0%
+		displayFolder: 04 Merchandising
+		lineageTag: m1000000-0000-0000-0000-000000000013
+
+	measure 'NS PY' = CALCULATE([Total Net Sales], SAMEPERIODLASTYEAR(Dim_Date[Date]))
+		formatString: \$#,##0.00
+		displayFolder: 02 YoY Comparisons
+		lineageTag: m1000000-0000-0000-0000-000000000014
+
+	measure 'NS YoY Growth %' = DIVIDE([Total Net Sales] - [NS PY], [NS PY], 0)
+		formatString: +0.0%;-0.0%;0.0%
+		displayFolder: 02 YoY Comparisons
+		lineageTag: m1000000-0000-0000-0000-000000000015
+
+	measure 'NQ PY' = CALCULATE([Total Net Quantity], SAMEPERIODLASTYEAR(Dim_Date[Date]))
+		formatString: #,##0
+		displayFolder: 02 YoY Comparisons
+		lineageTag: m1000000-0000-0000-0000-000000000016
+
+	measure 'NQ YoY Growth %' = DIVIDE([Total Net Quantity] - [NQ PY], [NQ PY], 0)
+		formatString: +0.0%;-0.0%;0.0%
+		displayFolder: 02 YoY Comparisons
+		lineageTag: m1000000-0000-0000-0000-000000000017
+
+	measure 'Product Net Sales' = SUM(Fact_Product_Sales[NS])
+		formatString: \$#,##0.00
+		displayFolder: 04 Merchandising
+		lineageTag: m1000000-0000-0000-0000-000000000018
+
+	measure 'Product Net Quantity' = SUM(Fact_Product_Sales[NQ])
+		formatString: #,##0
+		displayFolder: 04 Merchandising
+		lineageTag: m1000000-0000-0000-0000-000000000019
+
+	measure 'Product Standard Margin' = SUM(Fact_Product_Sales[SM])
+		formatString: \$#,##0.00
+		displayFolder: 04 Merchandising
+		lineageTag: m1000000-0000-0000-0000-000000000020
+
+	measure 'Product Margin %' = DIVIDE([Product Standard Margin], [Product Net Sales], 0)
+		formatString: 0.0%
+		displayFolder: 04 Merchandising
+		lineageTag: m1000000-0000-0000-0000-000000000021
+
+	column _Dummy
+		dataType: string
+		isHidden
+		lineageTag: m1000000-0000-0000-0000-000000000099
+		summarizeBy: none
+		sourceColumn: _Dummy
+
+	partition _Measures = m
+		mode: import
+		source =
+				let
+					Source = Table.FromRows({{"1"}}, {"_Dummy"})
+				in
+					Source
+
+	annotation PBI_Id = a1b2c3d4-0006-4000-8000-000000000000
+

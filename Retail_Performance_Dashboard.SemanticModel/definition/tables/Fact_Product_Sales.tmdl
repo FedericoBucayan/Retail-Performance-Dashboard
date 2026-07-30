@@ -1,0 +1,152 @@
+table Fact_Product_Sales
+	lineageTag: a1b2c3d4-0005-4000-8000-000000000001
+
+	column 'Store Name'
+		dataType: string
+		lineageTag: a1b2c3d4-0005-4000-8000-000000000002
+		summarizeBy: none
+		sourceColumn: Store Name
+
+		annotation SummarizationSetBy = Automatic
+
+	column Category
+		dataType: string
+		lineageTag: a1b2c3d4-0005-4000-8000-000000000003
+		summarizeBy: none
+		sourceColumn: Category
+
+		annotation SummarizationSetBy = Automatic
+
+	column Division
+		dataType: string
+		lineageTag: a1b2c3d4-0005-4000-8000-000000000004
+		summarizeBy: none
+		sourceColumn: Division
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Product Group'
+		dataType: string
+		lineageTag: a1b2c3d4-0005-4000-8000-000000000005
+		summarizeBy: none
+		sourceColumn: Product Group
+
+		annotation SummarizationSetBy = Automatic
+
+	column Gender
+		dataType: string
+		lineageTag: a1b2c3d4-0005-4000-8000-000000000006
+		summarizeBy: none
+		sourceColumn: Gender
+
+		annotation SummarizationSetBy = Automatic
+
+	column Year
+		dataType: int64
+		formatString: 0
+		lineageTag: a1b2c3d4-0005-4000-8000-000000000007
+		summarizeBy: sum
+		sourceColumn: Year
+
+		annotation SummarizationSetBy = Automatic
+
+	column Month
+		dataType: string
+		lineageTag: a1b2c3d4-0005-4000-8000-000000000008
+		summarizeBy: none
+		sourceColumn: Month
+
+		annotation SummarizationSetBy = Automatic
+
+	column DateKey
+		dataType: dateTime
+		formatString: yyyy-mm-dd
+		lineageTag: a1b2c3d4-0005-4000-8000-000000000009
+		summarizeBy: none
+		sourceColumn: DateKey
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 'Product Group Key'
+		dataType: string
+		lineageTag: a1b2c3d4-0005-4000-8000-000000000010
+		summarizeBy: none
+		sourceColumn: Product Group Key
+
+		annotation SummarizationSetBy = Automatic
+
+	column NS
+		dataType: double
+		lineageTag: a1b2c3d4-0005-4000-8000-000000000011
+		summarizeBy: sum
+		sourceColumn: NS
+
+		annotation SummarizationSetBy = Automatic
+
+	column NQ
+		dataType: double
+		lineageTag: a1b2c3d4-0005-4000-8000-000000000012
+		summarizeBy: sum
+		sourceColumn: NQ
+
+		annotation SummarizationSetBy = Automatic
+
+	column SM
+		dataType: double
+		lineageTag: a1b2c3d4-0005-4000-8000-000000000013
+		summarizeBy: sum
+		sourceColumn: SM
+
+		annotation SummarizationSetBy = Automatic
+
+	column Country
+		dataType: string
+		lineageTag: fb60f06a-869e-4ad6-839a-d0f55c09c1b5
+		summarizeBy: none
+		sourceColumn: Country
+
+		annotation SummarizationSetBy = Automatic
+
+	column Channel
+		dataType: string
+		lineageTag: 2d0ded3b-c026-43ec-9ec2-d10ae5f62cf0
+		summarizeBy: none
+		sourceColumn: Channel
+
+		annotation SummarizationSetBy = Automatic
+
+	column MonthNo
+		dataType: string
+		lineageTag: 8c58393b-2dfa-48f7-9dbd-378e1cf19f8e
+		summarizeBy: none
+		sourceColumn: MonthNo
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Fact_Product_Sales = m
+		mode: import
+		source =
+				let
+					Source = Excel.Workbook(File.Contents(SourceFolderPath & "\RET_Product_Sales_Database.xlsx"), null, true),
+					Sheet = Source{0}[Data],
+					PromotedHeaders = Table.PromoteHeaders(Sheet, [PromoteAllScalars=true]),
+					MonthMap = #table({"Month", "MonthNo"}, {
+						{"JAN", 1}, {"FEB", 2}, {"MAR", 3}, {"APR", 4}, {"MAY", 5}, {"JUN", 6},
+						{"JUL", 7}, {"AUG", 8}, {"SEP", 9}, {"OCT", 10}, {"NOV", 11}, {"DEC", 12}
+					}),
+					MergedMonth = Table.NestedJoin(PromotedHeaders, {"Month"}, MonthMap, {"Month"}, "MonthData", JoinKind.LeftOuter),
+					ExpandedMonth = Table.ExpandTableColumn(MergedMonth, "MonthData", {"MonthNo"}),
+					AddDateKey = Table.AddColumn(ExpandedMonth, "DateKey", each #date([Year], [MonthNo], 1), type date),
+					AddKey = Table.AddColumn(AddDateKey, "Product Group Key", each [Category] & "|" & [Division] & "|" & [Product Group] & "|" & [Gender], type text),
+					ChangedTypes = Table.TransformColumnTypes(AddKey, {
+						{"Store Name", type text}, {"Category", type text}, {"Division", type text}, {"Product Group", type text},
+						{"Gender", type text}, {"Year", Int64.Type}, {"Month", type text}, {"NS", type number},
+						{"NQ", type number}, {"SM", type number}
+					})
+				in
+					ChangedTypes
+
+	annotation PBI_Id = a1b2c3d4-0005-4000-8000-000000000000
+

@@ -1,0 +1,59 @@
+table Dim_Category
+	lineageTag: a1b2c3d4-0003-4000-8000-000000000001
+
+	column 'Product Group Key'
+		dataType: string
+		isKey
+		lineageTag: a1b2c3d4-0003-4000-8000-000000000002
+		summarizeBy: none
+		sourceColumn: Product Group Key
+
+		annotation SummarizationSetBy = Automatic
+
+	column Category
+		dataType: string
+		lineageTag: a1b2c3d4-0003-4000-8000-000000000003
+		summarizeBy: none
+		sourceColumn: Category
+
+		annotation SummarizationSetBy = Automatic
+
+	column Division
+		dataType: string
+		lineageTag: a1b2c3d4-0003-4000-8000-000000000004
+		summarizeBy: none
+		sourceColumn: Division
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Product Group'
+		dataType: string
+		lineageTag: a1b2c3d4-0003-4000-8000-000000000005
+		summarizeBy: none
+		sourceColumn: Product Group
+
+		annotation SummarizationSetBy = Automatic
+
+	column Gender
+		dataType: string
+		lineageTag: a1b2c3d4-0003-4000-8000-000000000006
+		summarizeBy: none
+		sourceColumn: Gender
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Dim_Category = m
+		mode: import
+		source =
+				let
+					Source = Excel.Workbook(File.Contents(SourceFolderPath & "\RET_Product_Sales_Database.xlsx"), null, true),
+					Sheet = Source{0}[Data],
+					PromotedHeaders = Table.PromoteHeaders(Sheet, [PromoteAllScalars=true]),
+					SelectedCols = Table.SelectColumns(PromotedHeaders, {"Category", "Division", "Product Group", "Gender"}),
+					RemoveDuplicates = Table.Distinct(SelectedCols),
+					AddKey = Table.AddColumn(RemoveDuplicates, "Product Group Key", each [Category] & "|" & [Division] & "|" & [Product Group] & "|" & [Gender], type text)
+				in
+					AddKey
+
+	annotation PBI_Id = a1b2c3d4-0003-4000-8000-000000000000
+

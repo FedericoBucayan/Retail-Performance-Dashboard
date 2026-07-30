@@ -1,0 +1,183 @@
+table Fact_KPI_Sales
+	lineageTag: a1b2c3d4-0004-4000-8000-000000000001
+
+	column 'Store Name'
+		dataType: string
+		lineageTag: a1b2c3d4-0004-4000-8000-000000000002
+		summarizeBy: none
+		sourceColumn: Store Name
+
+		annotation SummarizationSetBy = Automatic
+
+	column Year
+		dataType: int64
+		formatString: 0
+		lineageTag: a1b2c3d4-0004-4000-8000-000000000003
+		summarizeBy: sum
+		sourceColumn: Year
+
+		annotation SummarizationSetBy = Automatic
+
+	column Month
+		dataType: string
+		lineageTag: a1b2c3d4-0004-4000-8000-000000000004
+		summarizeBy: none
+		sourceColumn: Month
+
+		annotation SummarizationSetBy = Automatic
+
+	column DateKey
+		dataType: dateTime
+		formatString: yyyy-mm-dd
+		lineageTag: a1b2c3d4-0004-4000-8000-000000000005
+		summarizeBy: none
+		sourceColumn: DateKey
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Traffic
+		dataType: double
+		lineageTag: a1b2c3d4-0004-4000-8000-000000000006
+		summarizeBy: sum
+		sourceColumn: Traffic
+
+		annotation SummarizationSetBy = Automatic
+
+	column Transactions
+		dataType: double
+		lineageTag: a1b2c3d4-0004-4000-8000-000000000007
+		summarizeBy: sum
+		sourceColumn: Transactions
+
+		annotation SummarizationSetBy = Automatic
+
+	column NS
+		dataType: double
+		lineageTag: a1b2c3d4-0004-4000-8000-000000000008
+		summarizeBy: sum
+		sourceColumn: NS
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'NS @FP'
+		dataType: double
+		lineageTag: a1b2c3d4-0004-4000-8000-000000000009
+		summarizeBy: sum
+		sourceColumn: NS @FP
+
+		annotation SummarizationSetBy = Automatic
+
+	column NQ
+		dataType: double
+		lineageTag: a1b2c3d4-0004-4000-8000-000000000010
+		summarizeBy: sum
+		sourceColumn: NQ
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'NQ @FP'
+		dataType: double
+		lineageTag: a1b2c3d4-0004-4000-8000-000000000011
+		summarizeBy: sum
+		sourceColumn: NQ @FP
+
+		annotation SummarizationSetBy = Automatic
+
+	column SM
+		dataType: double
+		lineageTag: a1b2c3d4-0004-4000-8000-000000000012
+		summarizeBy: sum
+		sourceColumn: SM
+
+		annotation SummarizationSetBy = Automatic
+
+	column Country
+		dataType: string
+		lineageTag: b17dc98e-3743-4057-bdec-5b826a0fe452
+		summarizeBy: none
+		sourceColumn: Country
+
+		annotation SummarizationSetBy = Automatic
+
+	column Channel
+		dataType: string
+		lineageTag: bd30c149-90b9-4352-8491-d1add19e3d3e
+		summarizeBy: none
+		sourceColumn: Channel
+
+		annotation SummarizationSetBy = Automatic
+
+	column Column13
+		dataType: string
+		lineageTag: 8329d604-de17-4ad1-a049-74064d274f15
+		summarizeBy: none
+		sourceColumn: Column13
+
+		annotation SummarizationSetBy = Automatic
+
+	column Column14
+		dataType: string
+		lineageTag: 8bb08e91-f0a9-40ea-80a6-98747c47bc3f
+		summarizeBy: none
+		sourceColumn: Column14
+
+		annotation SummarizationSetBy = Automatic
+
+	column Column15
+		dataType: string
+		lineageTag: 0e6c573b-c9f7-49db-9127-e3bf18a830b8
+		summarizeBy: none
+		sourceColumn: Column15
+
+		annotation SummarizationSetBy = Automatic
+
+	column Column16
+		dataType: string
+		lineageTag: 46322f22-4100-4c77-8ecd-461ceb184b36
+		summarizeBy: none
+		sourceColumn: Column16
+
+		annotation SummarizationSetBy = Automatic
+
+	column Column17
+		dataType: string
+		lineageTag: 3a257457-52ac-4834-87a4-2e2c5b0d2076
+		summarizeBy: none
+		sourceColumn: Column17
+
+		annotation SummarizationSetBy = Automatic
+
+	column MonthNo
+		dataType: string
+		lineageTag: 9b21194b-c597-4e9b-b3aa-44294b9aafca
+		summarizeBy: none
+		sourceColumn: MonthNo
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Fact_KPI_Sales = m
+		mode: import
+		source =
+				let
+					Source = Excel.Workbook(File.Contents(SourceFolderPath & "\RET_KPI_Sales_Database.xlsx"), null, true),
+					Sheet = Source{0}[Data],
+					PromotedHeaders = Table.PromoteHeaders(Sheet, [PromoteAllScalars=true]),
+					MonthMap = #table({"Month", "MonthNo"}, {
+						{"JAN", 1}, {"FEB", 2}, {"MAR", 3}, {"APR", 4}, {"MAY", 5}, {"JUN", 6},
+						{"JUL", 7}, {"AUG", 8}, {"SEP", 9}, {"OCT", 10}, {"NOV", 11}, {"DEC", 12}
+					}),
+					MergedMonth = Table.NestedJoin(PromotedHeaders, {"Month"}, MonthMap, {"Month"}, "MonthData", JoinKind.LeftOuter),
+					ExpandedMonth = Table.ExpandTableColumn(MergedMonth, "MonthData", {"MonthNo"}),
+					AddDateKey = Table.AddColumn(ExpandedMonth, "DateKey", each #date([Year], [MonthNo], 1), type date),
+					ChangedTypes = Table.TransformColumnTypes(AddDateKey, {
+						{"Store Name", type text}, {"Year", Int64.Type}, {"Month", type text}, {"Traffic", type number},
+						{"Transactions", type number}, {"NS", type number}, {"NS @FP", type number}, {"NQ", type number},
+						{"NQ @FP", type number}, {"SM", type number}
+					})
+				in
+					ChangedTypes
+
+	annotation PBI_Id = a1b2c3d4-0004-4000-8000-000000000000
+

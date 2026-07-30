@@ -1,0 +1,20 @@
+relationship Rel_Store_KPI
+	fromColumn: Fact_KPI_Sales.'Store Name'
+	toColumn: Dim_Store.'Store Name'
+
+relationship Rel_Store_Product
+	fromColumn: Fact_Product_Sales.'Store Name'
+	toColumn: Dim_Store.'Store Name'
+
+relationship Rel_Date_KPI
+	fromColumn: Fact_KPI_Sales.DateKey
+	toColumn: Dim_Date.Date
+
+relationship Rel_Date_Product
+	fromColumn: Fact_Product_Sales.DateKey
+	toColumn: Dim_Date.Date
+
+relationship Rel_Category_Product
+	fromColumn: Fact_Product_Sales.'Product Group Key'
+	toColumn: Dim_Category.'Product Group Key'
+

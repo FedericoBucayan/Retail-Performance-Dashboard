@@ -1,0 +1,5 @@
+expression SourceFolderPath = "C:\Users\bucay\OneDrive\Documents\Fede\AI Test\Retail" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+	lineageTag: e1000000-0000-0000-0000-000000000001
+
+	annotation PBI_ResultType = Text
+
