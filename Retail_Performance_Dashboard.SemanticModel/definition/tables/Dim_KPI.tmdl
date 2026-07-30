@@ -1,0 +1,56 @@
+table Dim_KPI
+	lineageTag: a1b2c3d4-0007-4000-8000-000000000001
+
+	column 'KPI Section'
+		dataType: string
+		lineageTag: a1b2c3d4-0007-4000-8000-000000000002
+		summarizeBy: none
+		sourceColumn: KPI Section
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'KPI Name'
+		dataType: string
+		isKey
+		lineageTag: a1b2c3d4-0007-4000-8000-000000000003
+		summarizeBy: none
+		sourceColumn: KPI Name
+		sortByColumn: SortOrder
+
+		annotation SummarizationSetBy = Automatic
+
+	column SortOrder
+		dataType: int64
+		formatString: 0
+		lineageTag: a1b2c3d4-0007-4000-8000-000000000004
+		summarizeBy: none
+		sourceColumn: SortOrder
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Dim_KPI = m
+		mode: import
+		source =
+				let
+					Source = Table.FromRows({
+						{"1. SALES & MARGIN PERFORMANCE", "Net Sales (NS)", 1},
+						{"1. SALES & MARGIN PERFORMANCE", "Net Quantity (NQ)", 2},
+						{"1. SALES & MARGIN PERFORMANCE", "ASP (AUR)", 3},
+						{"1. SALES & MARGIN PERFORMANCE", "Standard Margin % (SM%)", 4},
+						{"2. TRAFFIC & TRANSACTION EFFICIENCY", "Traffic", 5},
+						{"2. TRAFFIC & TRANSACTION EFFICIENCY", "Transactions", 6},
+						{"2. TRAFFIC & TRANSACTION EFFICIENCY", "Conversion Rate (CR%)", 7},
+						{"2. TRAFFIC & TRANSACTION EFFICIENCY", "ATV (Average Ticket)", 8},
+						{"2. TRAFFIC & TRANSACTION EFFICIENCY", "UPT (Units/Trans)", 9},
+						{"3. PRICING & MIX ANALYSIS", "Full Price Net Sales Mix %", 10}
+					}, {"KPI Section", "KPI Name", "SortOrder"}),
+					ChangedType = Table.TransformColumnTypes(Source, {
+						{"KPI Section", type text},
+						{"KPI Name", type text},
+						{"SortOrder", Int64.Type}
+					})
+				in
+					ChangedType
+
+	annotation PBI_Id = a1b2c3d4-0007-4000-8000-000000000000
+

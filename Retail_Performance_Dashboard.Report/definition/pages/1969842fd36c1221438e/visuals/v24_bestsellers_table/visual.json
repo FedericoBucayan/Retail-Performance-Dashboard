@@ -1,78 +1,44 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.11.0/schema.json",
-  "name": "v10_yoy_matrix",
+  "name": "v24_bestsellers_table",
   "position": {
-    "x": 20,
-    "y": 295,
-    "z": 5000,
-    "height": 287,
+    "x": 18.24296499656829,
+    "y": 979.51269732326762,
+    "z": 14000,
+    "height": 380,
     "width": 1240
   },
   "visual": {
-    "visualType": "matrix",
+    "visualType": "tableEx",
     "query": {
       "queryState": {
-        "Columns": {
-          "projections": [
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Dim_Store"
-                    }
-                  },
-                  "Property": "Store Name"
-                }
-              },
-              "queryRef": "Dim_Store.Store Name"
-            }
-          ]
-        },
-        "Rows": {
-          "projections": [
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Dim_KPI"
-                    }
-                  },
-                  "Property": "KPI Section"
-                }
-              },
-              "queryRef": "Dim_KPI.KPI Section"
-            },
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Dim_KPI"
-                    }
-                  },
-                  "Property": "KPI Name"
-                }
-              },
-              "queryRef": "Dim_KPI.KPI Name"
-            }
-          ]
-        },
         "Values": {
           "projections": [
             {
               "field": {
-                "Measure": {
+                "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "_Measures"
+                      "Entity": "Dim_Category"
                     }
                   },
-                  "Property": "Selected Year"
+                  "Property": "Product Group"
                 }
               },
-              "queryRef": "_Measures.Selected Year"
+              "queryRef": "Dim_Category.Product Group"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Dim_Category"
+                    }
+                  },
+                  "Property": "Category"
+                }
+              },
+              "queryRef": "Dim_Category.Category"
             },
             {
               "field": {
@@ -82,10 +48,36 @@
                       "Entity": "_Measures"
                     }
                   },
-                  "Property": "YoY Growth"
+                  "Property": "Product Net Sales"
                 }
               },
-              "queryRef": "_Measures.YoY Growth"
+              "queryRef": "_Measures.Product Net Sales"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "Product Net Quantity"
+                }
+              },
+              "queryRef": "_Measures.Product Net Quantity"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "Product Margin %"
+                }
+              },
+              "queryRef": "_Measures.Product Margin %"
             }
           ]
         }

@@ -106,6 +106,81 @@ table _Measures
 		displayFolder: 04 Merchandising
 		lineageTag: m1000000-0000-0000-0000-000000000021
 
+	measure 'Selected Year' =
+			VAR _SelectedYear = SELECTEDVALUE(Dim_Date[Year], MAX(Dim_Date[Year]))
+			VAR _Sort = SELECTEDVALUE(Dim_KPI[SortOrder], MIN(Dim_KPI[SortOrder]))
+			VAR _Val =
+				CALCULATE(
+					SWITCH(
+						_Sort,
+						1, FORMAT([Total Net Sales], "$#,##0"),
+						2, FORMAT([Total Net Quantity], "#,##0"),
+						3, FORMAT([ASP], "$#,##0.0"),
+						4, FORMAT([Standard Margin %], "0.0%"),
+						5, FORMAT([Total Traffic], "#,##0"),
+						6, FORMAT([Total Transactions], "#,##0"),
+						7, FORMAT([Conversion Rate %], "0.0%"),
+						8, FORMAT([ATV], "$#,##0.0"),
+						9, FORMAT([UPT], "0.0"),
+						10, FORMAT([Full Price Mix %], "0.0%")
+					),
+					Dim_Date[Year] = _SelectedYear
+				)
+			RETURN
+				IF(NOT ISBLANK(_Sort), COALESCE(_Val, "-"))
+		displayFolder: 02 YoY Comparisons
+		lineageTag: m1000000-0000-0000-0000-000000000022
+
+	measure 'Prior Year' =
+			VAR _SelectedYear = SELECTEDVALUE(Dim_Date[Year], MAX(Dim_Date[Year])) - 1
+			VAR _Sort = SELECTEDVALUE(Dim_KPI[SortOrder], MIN(Dim_KPI[SortOrder]))
+			VAR _Val =
+				CALCULATE(
+					SWITCH(
+						_Sort,
+						1, FORMAT([Total Net Sales], "$#,##0"),
+						2, FORMAT([Total Net Quantity], "#,##0"),
+						3, FORMAT([ASP], "$#,##0.0"),
+						4, FORMAT([Standard Margin %], "0.0%"),
+						5, FORMAT([Total Traffic], "#,##0"),
+						6, FORMAT([Total Transactions], "#,##0"),
+						7, FORMAT([Conversion Rate %], "0.0%"),
+						8, FORMAT([ATV], "$#,##0.0"),
+						9, FORMAT([UPT], "0.0"),
+						10, FORMAT([Full Price Mix %], "0.0%")
+					),
+					Dim_Date[Year] = _SelectedYear
+				)
+			RETURN
+				IF(NOT ISBLANK(_Sort), COALESCE(_Val, "-"))
+		displayFolder: 02 YoY Comparisons
+		lineageTag: m1000000-0000-0000-0000-000000000023
+
+	measure 'YoY Growth' =
+			VAR _SelectedYear = SELECTEDVALUE(Dim_Date[Year], MAX(Dim_Date[Year]))
+			VAR _Sort = SELECTEDVALUE(Dim_KPI[SortOrder], MIN(Dim_KPI[SortOrder]))
+			VAR _Val =
+				CALCULATE(
+					SWITCH(
+						_Sort,
+						1, FORMAT([NS YoY Growth %], "+0.0%;-0.0%;0.0%"),
+						2, FORMAT([NQ YoY Growth %], "+0.0%;-0.0%;0.0%"),
+						3, FORMAT(DIVIDE([ASP] - CALCULATE([ASP], SAMEPERIODLASTYEAR(Dim_Date[Date])), CALCULATE([ASP], SAMEPERIODLASTYEAR(Dim_Date[Date])), 0), "+0.0%;-0.0%;0.0%"),
+						4, FORMAT([Standard Margin %] - CALCULATE([Standard Margin %], SAMEPERIODLASTYEAR(Dim_Date[Date])), "+0.0 pp;-0.0 pp;0.0 pp"),
+						5, FORMAT(DIVIDE([Total Traffic] - CALCULATE([Total Traffic], SAMEPERIODLASTYEAR(Dim_Date[Date])), CALCULATE([Total Traffic], SAMEPERIODLASTYEAR(Dim_Date[Date])), 0), "+0.0%;-0.0%;0.0%"),
+						6, FORMAT(DIVIDE([Total Transactions] - CALCULATE([Total Transactions], SAMEPERIODLASTYEAR(Dim_Date[Date])), CALCULATE([Total Transactions], SAMEPERIODLASTYEAR(Dim_Date[Date])), 0), "+0.0%;-0.0%;0.0%"),
+						7, FORMAT([Conversion Rate %] - CALCULATE([Conversion Rate %], SAMEPERIODLASTYEAR(Dim_Date[Date])), "+0.0 pp;-0.0 pp;0.0 pp"),
+						8, FORMAT(DIVIDE([ATV] - CALCULATE([ATV], SAMEPERIODLASTYEAR(Dim_Date[Date])), CALCULATE([ATV], SAMEPERIODLASTYEAR(Dim_Date[Date])), 0), "+0.0%;-0.0%;0.0%"),
+						9, FORMAT([UPT] - CALCULATE([UPT], SAMEPERIODLASTYEAR(Dim_Date[Date])), "+0.0;-0.0;0.0"),
+						10, FORMAT([Full Price Mix %] - CALCULATE([Full Price Mix %], SAMEPERIODLASTYEAR(Dim_Date[Date])), "+0.0 pp;-0.0 pp;0.0 pp")
+					),
+					Dim_Date[Year] = _SelectedYear
+				)
+			RETURN
+				IF(NOT ISBLANK(_Sort), COALESCE(_Val, "-"))
+		displayFolder: 02 YoY Comparisons
+		lineageTag: m1000000-0000-0000-0000-000000000024
+
 	column _Dummy
 		dataType: string
 		isHidden

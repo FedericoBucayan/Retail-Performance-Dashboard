@@ -1,12 +1,12 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.0.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.11.0/schema.json",
   "name": "v09_card_fp",
   "position": {
-    "x": 1020,
-    "y": 200,
-    "z": 3004,
-    "width": 240,
-    "height": 110
+    "x": 770,
+    "y": 174,
+    "z": 12000,
+    "height": 105,
+    "width": 230
   },
   "visual": {
     "visualType": "card",
@@ -22,14 +22,60 @@
                       "Entity": "_Measures"
                     }
                   },
-                  "Property": "Full Price Mix %"
+                  "Property": "ASP"
                 }
               },
-              "queryRef": "_Measures.Full Price Mix %"
+              "queryRef": "_Measures.ASP"
             }
           ]
         }
       }
+    },
+    "visualContainerObjects": {
+      "border": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "color": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#9BD5C7'"
+                    }
+                  }
+                }
+              }
+            },
+            "radius": {
+              "expr": {
+                "Literal": {
+                  "Value": "8D"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "dropShadow": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ]
     }
   }
 }

@@ -1,48 +1,33 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.11.0/schema.json",
-  "name": "v02_slicer_store",
+  "name": "v20_header",
   "position": {
-    "x": 20,
-    "y": 85,
-    "z": 1000,
-    "height": 75,
-    "width": 380
+    "x": 18.24296499656829,
+    "y": 599.51269732326784,
+    "z": 8000,
+    "height": 50,
+    "width": 1240
   },
   "visual": {
-    "visualType": "slicer",
-    "query": {
-      "queryState": {
-        "Values": {
-          "projections": [
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Dim_Store"
-                    }
-                  },
-                  "Property": "Store Name"
-                }
-              },
-              "queryRef": "Dim_Store.Store Name",
-              "active": true
-            }
-          ]
-        }
-      }
-    },
+    "visualType": "textbox",
     "objects": {
-      "data": [
+      "general": [
         {
           "properties": {
-            "mode": {
-              "expr": {
-                "Literal": {
-                  "Value": "'Dropdown'"
-                }
+            "paragraphs": [
+              {
+                "textRuns": [
+                  {
+                    "value": "CATEGORY & MERCHANDISING INSIGHTS",
+                    "textStyle": {
+                      "fontWeight": "bold",
+                      "fontSize": "18pt",
+                      "color": "#0f172a"
+                    }
+                  }
+                ]
               }
-            }
+            ]
           }
         }
       ]
@@ -58,6 +43,13 @@
                 }
               }
             },
+            "radius": {
+              "expr": {
+                "Literal": {
+                  "Value": "8D"
+                }
+              }
+            },
             "color": {
               "solid": {
                 "color": {
@@ -66,13 +58,6 @@
                       "Value": "'#9BD5C7'"
                     }
                   }
-                }
-              }
-            },
-            "radius": {
-              "expr": {
-                "Literal": {
-                  "Value": "8D"
                 }
               }
             }
