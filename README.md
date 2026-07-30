@@ -8,15 +8,15 @@ This repository was designed specifically as a portfolio showcase for recruiters
 
 ---
 
-## 🎯 Executive Value Proposition (For Recruiters & Hiring Managers)
+## Executive Value Proposition (For Recruiters & Hiring Managers)
 
-### 1. 📈 Retail Analytics & Commercial Planning Expertise
+### 1. Retail Analytics & Commercial Planning Expertise
 First and foremost, this project demonstrates deep functional expertise in retail commercial analytics and performance measurement:
 * **Core KPI Analysis**: Calculates and visualizes key retail planning metrics dynamically including Net Sales (NS), Net Quantity (NQ), Year over Year (YoY) Growth, Average Selling Price (ASP), Standard Margin % (SM%), Conversion Rate % (CR%), Units Per Transaction (UPT), Average Transaction Value (ATV), and Full Price Mix %.
 * **Multi-Dimensional Breakdown**: Analyzes commercial performance across stores, product categories, merchandise divisions, gender demographics, and product groups with full YoY comparison at every level.
 * **Decision-Support Architecture**: Built from the perspective of an experienced retail planning practitioner and commercial decision-maker. The dashboard is engineered to translate raw sales databases into actionable commercial insights, facilitating strategic decisions around product assortment, channel performance, markdown strategy, and inventory management.
 
-### 2. 🤖 AI-Powered Engineering & Digital Mindset (Co-Created with Google Antigravity)
+### 2. AI-Powered Engineering & Digital Mindset (Co-Created with Google Antigravity)
 Second, this repository showcases a forward-thinking digital mindset and passion for modern technology:
 * **Transparency Statement**: I built this entire project combining my expertise in retail planning and commercial analytics in partnership with Google Antigravity (an advanced agentic AI coding assistant).
 * **Enterprise Power BI PBIP & Fabric Integration**: The Power BI Project (`Retail_Performance_Dashboard.pbip`) was programmatically authored using the Power BI Modeling MCP Server (`powerbi-modeling-mcp`) and Microsoft's `skills-for-fabric` framework. The semantic model TMDL schema and PBIR report visual definitions were systematically created, compiled, and verified through programmatic MCP tooling.
@@ -25,7 +25,7 @@ Second, this repository showcases a forward-thinking digital mindset and passion
 
 ---
 
-## 🛠️ Key Dashboard Capabilities and Features
+## Key Dashboard Capabilities and Features
 
 ### 1. YoY Performance Comparison Matrix
 A full-page comparison matrix showing current year vs. prior year performance per store and in total, across all core KPIs (NS, NQ, ASP, SM%, Traffic, Transactions, CR%, ATV, UPT, FP Mix%). All YoY movements are color-coded with directional badges (▲/▼).
@@ -47,7 +47,7 @@ A dynamic ranking table of all product groups sortable by Net Sales or Net Quant
 
 ---
 
-## 💻 Tech Stack & Architecture
+## Tech Stack & Architecture
 
 * **Power BI Fabric Architecture**: Built as a developer-native Power BI Project (`Retail_Performance_Dashboard.pbip`) powered by TMDL definition files and PBIR visual schemas, authored using the Power BI Modeling MCP Server (`powerbi-modeling-mcp`) and Microsoft `skills-for-fabric` framework.
 * **Backend / ETL Pipeline**: Python 3 (Pandas, Openpyxl) aggregating raw Excel databases and compiling structured JSON data arrays.
@@ -56,7 +56,7 @@ A dynamic ranking table of all product groups sortable by Net Sales or Net Quant
 
 ---
 
-## 📂 Repository File Guide
+## Repository File Guide
 
 * **`Retail_Performance_Dashboard.pbip`**: [Power BI Project File (.pbip)](./Retail_Performance_Dashboard.pbip) — Enterprise Power BI Project definition, containing TMDL Semantic Model definition files and PBIR visual report components.
 * **`Retail_Performance_Dashboard_PBI_PDF.pdf`**: [Power BI Dashboard PDF](./Retail_Performance_Dashboard_PBI_PDF.pdf) — Exported high-resolution PDF snapshot of the Power BI report.
