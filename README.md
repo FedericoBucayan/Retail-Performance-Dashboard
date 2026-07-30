@@ -1,6 +1,8 @@
 # Retail Performance Dashboard
 
-🌐 [Live Interactive Web Dashboard Demo](https://federicobucayan.github.io/Retail-Performance-Dashboard/)
+🌐 [Live Interactive Web Dashboard Demo](https://federicobucayan.github.io/Retail-Performance-Dashboard/)  
+📊 [Power BI Project File (.pbip)](./Retail_Performance_Dashboard.pbip)  
+📄 [Power BI Dashboard PDF](./Retail_Performance_Dashboard_PBI_PDF.pdf)
 
 A comprehensive retail analytics solution delivered through two parallel enterprise platforms: a live interactive web dashboard (`index.html`) and a native Power BI Project (`Retail_Performance_Dashboard.pbip`). The solution aggregates multiyear sales spreadsheets, calculates commercial KPIs dynamically, and displays store, category, and product level insights in a clean corporate interface.
 
@@ -58,8 +60,9 @@ A dynamic ranking table of all product groups sortable by Net Sales or Net Quant
 
 ## Repository File Guide
 
-* **`Retail_Performance_Dashboard.pbip`**: Enterprise Power BI Project definition, containing TMDL Semantic Model definition files and PBIR visual report components.
-* **`index.html`**: The main compiled interactive web visual dashboard. Open this to view the web report.
+* **`Retail_Performance_Dashboard.pbip`**: [Power BI Project File (.pbip)](./Retail_Performance_Dashboard.pbip) — Enterprise Power BI Project definition, containing TMDL Semantic Model definition files and PBIR visual report components.
+* **`Retail_Performance_Dashboard_PBI_PDF.pdf`**: [Power BI Dashboard PDF](./Retail_Performance_Dashboard_PBI_PDF.pdf) — Exported high-resolution PDF snapshot of the Power BI report.
+* **`index.html`**: [Live Interactive Web Dashboard](https://federicobucayan.github.io/Retail-Performance-Dashboard/) — The main compiled interactive web visual dashboard. Open this to view the web report.
 * **`Refresh_Retail_Visual_Report.bat`**: Single click batch script to aggregate spreadsheet data, compile the dashboard layout, run validation, and launch the report.
 * **`RET_KPI_Sales_Database.xlsx`**: Store level KPI spreadsheet database.
 * **`RET_Product_Sales_Database.xlsx`**: Product transaction level spreadsheet database.
